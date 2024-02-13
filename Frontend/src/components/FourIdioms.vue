@@ -1,6 +1,5 @@
 <template>
   <div>
-    <filter />
     <search />
     <div>
       <div class="black-bg" v-if="modal_open == true">
@@ -35,12 +34,10 @@
 <script>
 import axios from 'axios';
 import Search from './Search.vue';
-import Filter from './filter.vue';
 
 export default {
   components: { 
     Search,
-    Filter,
   },
   data() {
     return {
