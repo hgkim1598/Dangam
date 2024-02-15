@@ -1,7 +1,15 @@
 <template>
   <b-form @submit.prevent="submitForm" no-ok no-cancel>
-    <b-form-group label="카테고리">
-      <b-form-select v-model="category" :options="categories"></b-form-select>
+    <b-form-group label="카테고리 *">
+      <b-dropdown v-model="selectedCategory" :text="selectedCategory ? selectedCategory : '카테고리 선택'" variant="outline-primary" :class="{'invalid-dropdown': !selectedCategory}">
+        <b-dropdown-menu class="custom-dropdown-menu">
+          <div style="max-height: 300px; overflow-y: auto;">
+            <b-form-radio v-for="(cat, index) in categories" :key="index" :value="cat" @input="selectedCategory = cat" name="category">
+              {{ cat }}
+            </b-form-radio>
+          </div>
+        </b-dropdown-menu>
+      </b-dropdown>
     </b-form-group>
     <b-form-group label="사자성어(한국어) *" label-for="contentsKr">
       <b-form-input id="contentsKr" v-model="contentsKr" required></b-form-input>
@@ -10,11 +18,12 @@
       <b-form-input id="contentsZh" v-model="contentsZh"></b-form-input>
     </b-form-group>
     <b-form-group label="뜻 풀이 *" label-for="contentsDetail">
-      <b-form-input id="contentsDetail" v-model="contentsDetail" required></b-form-input>
+      <b-form-textarea id="contentsDetail" v-model="contentsDetail" required></b-form-textarea>
     </b-form-group>
-    <b-button type="submit" variant="primary">{{ isUpdateMode ? '수정' : '등록' }}</b-button>
+    <b-button type="submit" variant="primary" :disabled="!selectedCategory || !contentsKr || !contentsDetail">{{ isUpdateMode ? '수정' : '등록' }}</b-button>
   </b-form>
 </template>
+
 <script>
 import axios from 'axios';
 
@@ -22,7 +31,7 @@ export default {
   props: ['isEditMode', 'editId'], // 수정 모드 여부 및 수정할 아이템의 ID props
   data() {
     return {
-      category: null,
+      selectedCategory: null,
       categories: [], // 카테고리 리스트를 빈 배열로 초기화합니다.
       contentsDetail: '',
       contentsKr: '',
@@ -48,7 +57,7 @@ export default {
         const response = await axios.get(`http://192.168.0.149:8000/fourchar/${id}`);
         const data = response.data;
         // 가져온 데이터를 각 input 필드에 설정
-        this.category = data.category;
+        this.selectedCategory = data.category;
         this.contentsKr = data.contents_kr;
         this.contentsZh = data.contents_zh;
         this.contentsDetail = data.contents_detail;
@@ -65,11 +74,17 @@ export default {
       }
     },
     async submitForm() {
+      if (!this.selectedCategory || !this.contentsKr || !this.contentsDetail) {
+        // 카테고리, 사자성어(한국어), 뜻 풀이 중 하나라도 입력되지 않은 경우
+        alert('필수 입력 항목을 모두 작성하세요.');
+        return;
+      }
+      
       const data = {
         contents_kr: this.contentsKr,
         contents_zh: this.contentsZh,
         contents_detail: this.contentsDetail,
-        category: this.category
+        category: this.selectedCategory
       };
 
       try {
@@ -93,3 +108,9 @@ export default {
   }
 };
 </script>
+
+<style>
+.invalid-dropdown .btn-outline-primary {
+  border-color: red;
+}
+</style>
