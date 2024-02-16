@@ -67,7 +67,7 @@ export default {
     },
     async fetchCategories() {
       try {
-        const response = await axios.get('http://192.168.0.149:8000/category/');
+        const response = await axios.get('http://192.168.0.149:8000/category/?select_category=fourchar');
         this.categories = response.data; // API에서 받아온 카테고리 리스트를 저장합니다.
       } catch (error) {
         console.error('카테고리를 불러오는 중 오류 발생:', error);

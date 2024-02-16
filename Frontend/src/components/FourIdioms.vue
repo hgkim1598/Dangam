@@ -153,7 +153,7 @@ export default {
     },
     async fetchCategories() {
       try {
-        const apiUrl = 'http://192.168.0.149:8000/category/';
+        const apiUrl = 'http://192.168.0.149:8000/category/?select_category=fourchar';
         const response = await axios.get(apiUrl);
         this.categories = response.data; // 카테고리 배열에 데이터 저장
       } catch (error) {
@@ -222,10 +222,10 @@ export default {
   // 선택된 카테고리들을 백엔드에서 요구하는 형식에 맞게 가공합니다.
   const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
 
-  axios.get(`http://192.168.0.149:8000/saying/filter/?${categoriesParams}`)
+  axios.get(`http://192.168.0.149:8000/fourchar/filter/?${categoriesParams}`)
     .then(response => {
       console.log(response.data);
-      // 성공적으로 요청을 보냈을 때의 처리를 추가할 수 있습니다.
+      this.items = response.data.content; // 받아온 데이터를 items에 할당
       // 드롭다운 박스를 닫습니다.
       this.$refs.categoryDropdown.hide();
     })
