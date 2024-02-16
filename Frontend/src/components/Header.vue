@@ -6,6 +6,7 @@
             <b-collapse is-nav id="nav_collapse">
                 <b-navbar-nav>
                     <b-nav-item to="/">사자성어</b-nav-item>
+                    
                     <b-nav-item href="#">명언</b-nav-item>
                 </b-navbar-nav>
             </b-collapse>

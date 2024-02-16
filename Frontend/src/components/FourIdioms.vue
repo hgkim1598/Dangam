@@ -1,4 +1,27 @@
 <template>
+  <div>
+    <!-- 검색어 입력 상자 -->
+    <div>
+      <input type="text" v-model="searchKeyword">
+      <!-- 검색 버튼 -->
+      <b-button @click="search">
+        <!-- 돋보기 아이콘 -->
+        <b-icon icon="search"></b-icon>
+      </b-button>
+    </div>
+    <!-- 게시판 데이터 표시 -->
+    <div>
+      <b-table striped hover :items="items" :fields="fields">
+      </b-table>
+    </div>
+    <!-- 페이지 번호 표시 및 변경 -->
+    <div class="d-flex justify-content-end">
+      <div>
+        <b-button @click="changePage(pageNumber - 1)" :disabled="pageNumber <= 1">이전 페이지</b-button>
+        <span>{{ pageNumber }} / {{ totalPage }}</span>
+        <b-button @click="changePage(pageNumber + 1)" :disabled="pageNumber >= totalPage">다음 페이지</b-button>
+     </div>
+   </div>
   <div class="table-container">
     <b-button @click="showModal" class="nr_button">신규 등록</b-button>
     <b-dropdown v-if="categories.length > 0" ref="categoryDropdown" class="category-dropdown" variant="primary">
@@ -49,6 +72,7 @@
       </template>
     </b-table>
   </div>
+</div>
 </template>
 
 <script>
@@ -61,6 +85,9 @@ export default {
   },
   data() {
     return {
+      totalPage: 0,
+      pageNumber: 1,
+      searchKeyword: '',
       modalVisible: false,
       isEditMode: false,
       editId: null,
@@ -185,14 +212,45 @@ export default {
       console.error('GET 요청 중 오류가 발생했습니다.', error);
       // 오류 발생 시 처리할 내용을 추가할 수 있습니다.
     });
-}
-,
+},
     toggleDropdown() {
       // 드롭다운 박스를 열거나 닫습니다.
       this.$refs.categoryDropdown.toggle();
       // 선택된 카테고리를 이전에 선택된 카테고리로 저장합니다.
       this.prevSelectedCategories = [...this.selectedCategories];
-    }
+    },
+    fetchData(page, keyword) {
+      page = Number(page);
+
+      let apiUrl = `http://192.168.0.149:8000/fourchar`;
+      if (keyword) {
+        apiUrl += `/filter/?keyword=${keyword}`;
+      } else {
+        apiUrl += `?p=${page}`;
+      }
+
+      axios.get(apiUrl)
+        .then(response => {
+          this.totalPage = response.data.total_page;
+          this.items = response.data.content;
+        })
+        .catch(error => {
+          console.error('데이터를 불러오는 중 오류 발생:', error);
+        });
+    },
+    changePage(page) {
+      if (page > 0 && page <= this.totalPage) {
+        this.pageNumber = page;
+        this.fetchData(page, this.searchKeyword); // 페이지 변경 시 검색어도 함께 전달
+      }
+    },
+    search() {
+      const trimmedKeyword = this.searchKeyword.trim();
+      if (trimmedKeyword !== '') {
+        this.pageNumber = 1; // 검색할 때 페이지 번호를 1로 초기화합니다.
+        this.fetchData(this.pageNumber, trimmedKeyword); // 검색 시 검색어도 함께 전달
+      }
+    },
   }
 };
 </script>
