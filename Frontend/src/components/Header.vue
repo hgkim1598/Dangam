@@ -6,6 +6,7 @@
             <b-collabse is-nave id="nav_collase">
                 <b-navbar-nav>
                     <b-nav-item to="/">사자성어</b-nav-item>
+                    
                     <b-nav-item href="#">명언</b-nav-item>
                 </b-navbar-nav>
             </b-collabse>
