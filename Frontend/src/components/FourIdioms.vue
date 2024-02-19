@@ -1,5 +1,19 @@
 <template>
   <div>
+    &emsp;
+    <h2>사자성어 데이터</h2>
+    <!-- 자음 필터 -->
+    <h6>사자성어(한글) 선택</h6>
+    <div>
+      <b-button
+        v-for="consonants in consonants"
+        :key="consonants"
+        @click="toggleConsonants(consonants)"
+        :variant="buttonVariant(consonants)"
+      >
+        {{ consonants }}
+      </b-button>
+    </div>
     <!-- 검색어 입력 상자 -->
     <div>
       <input type="text" v-model="searchKeyword">
@@ -98,12 +112,14 @@ export default {
         { key: 'contents_detail', label: '뜻풀이' },
         { key: 'actions', label: '제어', class: 'text-center', thClass: 'text-center', sortable: false }
       ],
+      consonants: ['전체', 'ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'], // 한글 자음
       items: [],
       rows: [],
       infoModal: { id: 'info-modal', title: '', content: '' },
       categories: [], // 카테고리 배열
       selectedCategories: [], // 선택된 카테고리 배열
       prevSelectedCategories: [], // 이전 선택된 카테고리 배열
+      selectedConsonants: [] // 선택된 자음 배열
     };
   },
   created() {
@@ -116,12 +132,24 @@ export default {
     }
   },
   methods: {
-    fetchData1(page, keyword) {
+    buttonVariant(consonants) {
+      return 'primary';
+    },
+
+    fetchData1(page, keyword, consonants) {
       page = Number(page);
 
       let apiUrl = `http://192.168.0.149:8000/fourchar`;
+
       if (keyword) {
         apiUrl += `/filter/?keyword=${keyword}`;
+      } else if (this.selectedConsonants && this.selectedConsonants.length > 0) {
+        if (this.selectedConsonants.includes('전체')) {
+          apiUrl += `?p=${page}`;
+        } else {
+          const consonantString = this.selectedConsonants.join('&consonants=') // 선택된 자음을 쉼표로 구분된 문자열로 변환
+          apiUrl += `/filter/?consonants=${consonantString}&p=${page}`;
+        }
       } else {
         apiUrl += `?p=${page}`;
       }
@@ -135,6 +163,48 @@ export default {
           console.error('데이터를 불러오는 중 오류 발생:', error);
         });
     },
+
+    async toggleConsonants(consonants) {
+      const index = this.selectedConsonants.indexOf(consonants);
+
+      if (consonants === '전체') {
+        // 전체 버튼일 경우
+        if (index === -1) {
+          // 전체 버튼이 선택되지 않은 경우, 선택된 자음 배열에 전체 버튼을 추가하고 다른 자음 버튼을 비활성화
+          this.selectedConsonants = ['전체'];
+        } else {
+          // 전체 버튼이 이미 선택된 경우, 선택을 취소하고 모든 자음 버튼을 활성화
+          this.selectedConsonants = [];
+        }
+      } else {
+        // 다른 자음 버튼이 선택된 경우
+        if (index === -1) {
+          // 선택되지 않은 경우, 선택된 자음 배열에 해당 버튼 추가
+          this.selectedConsonants.push(consonants);
+          // 만약 전체 버튼이 선택된 상태였다면 전체 버튼 선택 취소
+          const allIndex = this.selectedConsonants.indexOf('전체');
+          if (allIndex !== -1) {
+            this.selectedConsonants.splice(allIndex, 1);
+          }
+        } else {
+          // 선택된 경우, 선택을 취소
+          this.selectedConsonants.splice(index, 1);
+        }
+      }
+
+      // 전체가 선택되었는지 확인
+      const isAllSelected = this.selectedConsonants.includes('전체');
+
+      // 전체가 선택되지 않은 경우
+      if (!isAllSelected) {
+        // 전체가 선택되지 않았을 때 데이터 가져오기
+        await this.fetchData1(this.pageNumber, this.searchKeyword, this.selectedConsonants);
+      } else {
+        // 전체가 선택된 경우 전체 데이터 가져오기
+        await this.fetchData();
+      }
+    },
+
     async fetchData(page) {
       try {
         page = 1;
@@ -252,7 +322,7 @@ export default {
       const trimmedKeyword = this.searchKeyword.trim();
       if (trimmedKeyword !== '') {
         this.pageNumber = 1; // 검색할 때 페이지 번호를 1로 초기화합니다.
-        this.fetchData1(this.pageNumber, trimmedKeyword); // 검색 시 검색어도 함께 전달
+        this.fetchData1(this.pageNumber, trimmedKeyword,); // 검색 시 검색어도 함께 전달
       }
     },
   }
