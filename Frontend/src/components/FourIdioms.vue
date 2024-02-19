@@ -168,9 +168,10 @@ export default {
       } else {
         apiUrl += `?p=${page}`;
       }
-
+      console.log(apiUrl);
       axios.get(apiUrl)
         .then(response => {
+          console.log(response.data);
           this.totalPage = response.data.total_page;
           this.items = response.data.content;
         })
@@ -321,8 +322,9 @@ export default {
     //     });
     // },
     fetchDataWithSelectedCategories() {
-    const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
-    this.fetchData1(this.pageNumber, this.searchKeyword, categoriesParams);
+      const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+    console.log(categoriesParams); // 확인하고 싶은 변수를 콘솔에 출력
+    this.fetchData1(this.pageNumber, this.searchKeyword, null, categoriesParams);
   },
 
     toggleDropdown() {
@@ -339,7 +341,7 @@ export default {
     if (this.selectedCategories.length > 0 || this.searchKeyword.trim() !== '') {
       // 카테고리가 선택되어 있거나 검색어가 입력되어 있는 경우에만 필터링된 데이터를 가져옵니다.
       const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
-      this.fetchData1(page, this.searchKeyword, categoriesParams);
+      this.fetchData1(page, this.searchKeyword, null, categoriesParams);
     } else {
       // 카테고리가 선택되어 있지 않고 검색어가 입력되어 있지 않은 경우 전체 데이터를 가져옵니다.
       this.fetchData1(page);
@@ -351,7 +353,7 @@ export default {
       const trimmedKeyword = this.searchKeyword.trim();
       if (trimmedKeyword !== '') {
         this.pageNumber = 1; // 검색할 때 페이지 번호를 1로 초기화합니다.
-        this.fetchData1(this.pageNumber, trimmedKeyword,); // 검색 시 검색어도 함께 전달
+        this.fetchData1(this.pageNumber, trimmedKeyword, null); // 검색 시 검색어도 함께 전달
       }
     },
   }
