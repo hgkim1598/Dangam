@@ -147,7 +147,7 @@ export default {
       }
     },
 
-    fetchData1(page, keyword, consonants) {
+    fetchData1(page, keyword, consonants, categoriesParams) {
       page = Number(page);
 
       let apiUrl = `http://192.168.0.149:8000/fourchar`;
@@ -162,6 +162,9 @@ export default {
           const consonantString = this.selectedConsonants.join('&consonants=') // 선택된 자음을 쉼표로 구분된 문자열로 변환
           apiUrl += `/filter/?consonants=${consonantString}&p=${page}`;
         }
+      }  else if (categoriesParams) {
+        apiUrl += `/filter/?${categoriesParams}&p=${page}`; // page 변수를 사용합니다.
+        this.$refs.categoryDropdown.hide();
       } else {
         apiUrl += `?p=${page}`;
       }
