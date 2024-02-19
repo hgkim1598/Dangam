@@ -132,8 +132,19 @@ export default {
     }
   },
   methods: {
-    buttonVariant(consonants) {
-      return 'primary';
+      buttonVariant(consonants) {
+      // 선택된 자음 배열에 현재 버튼이 포함되어 있는지 확인
+      const isSelected = this.selectedConsonants.includes(consonants);
+      
+      // 전체 버튼인 경우
+      if (consonants === '전체') {
+        // 전체가 선택된 상태이면 빨간색, 아니면 파란색
+        return isSelected ? 'danger' : 'primary';
+      } else {
+        // 다른 자음 버튼인 경우
+        // 선택된 상태이면 빨간색, 아니면 파란색
+        return isSelected ? 'danger' : 'primary';
+      }
     },
 
     fetchData1(page, keyword, consonants) {
@@ -142,7 +153,8 @@ export default {
       let apiUrl = `http://192.168.0.149:8000/fourchar`;
 
       if (keyword) {
-        apiUrl += `/filter/?keyword=${keyword}`;
+        apiUrl += `/filter/?keyword=${keyword}&p=${page}`;
+      
       } else if (this.selectedConsonants && this.selectedConsonants.length > 0) {
         if (this.selectedConsonants.includes('전체')) {
           apiUrl += `?p=${page}`;
