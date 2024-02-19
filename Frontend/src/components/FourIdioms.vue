@@ -42,7 +42,7 @@
       <!-- Create.vue 컴포넌트 렌더링 -->
       <Create :isEditMode="isEditMode" :editId="editId" @closeModal="closeModal" />
     </b-modal>
-    <b-table striped hover :items="items" :fields="fields">
+    <b-table :items="items" :fields="fields" bordered hover>
       <template #cell(actions)="row">
         <!-- 제어 버튼 -->
         <div class="btn-group" role="group">
@@ -403,4 +403,5 @@ export default {
   width: 250px; /* 너비 설정 */
   border: 2px solid #ccc; /* 테두리 설정 */
 }
+
 </style>
