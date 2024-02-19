@@ -16,7 +16,7 @@
     </div>
     <!-- 검색어 입력 상자 -->
     <div>
-      <input type="text" v-model="searchKeyword">
+      <input type="text" v-model="searchKeyword" class="oval-input">
       <!-- 검색 버튼 -->
       <b-button @click="search">
         <!-- 돋보기 아이콘 -->
@@ -378,5 +378,12 @@ export default {
 .category-dropdown-list {
   max-height: 200px; /* 드롭다운 박스의 최대 높이 설정 */
   overflow-y: auto; /* 수직 스크롤을 활성화합니다. */
+}
+
+.oval-input {
+  border-radius: 50px; /* 타원형으로 만들기 위해 반지름 설정 */
+  padding: 10px 20px; /* 내부 여백 설정 */
+  width: 250px; /* 너비 설정 */
+  border: 2px solid #ccc; /* 테두리 설정 */
 }
 </style>
