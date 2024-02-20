@@ -33,11 +33,11 @@
         </template>
         <b-form-group  class="category-dropdown-list">
           <b-form-checkbox-group v-model="selectedCategories">
-            <b-form-checkbox v-for="(cat, index) in categories" :key="index" :value="cat">{{ cat }}</b-form-checkbox>
+            <b-form-checkbox v-for="(cat, index) in categories" :key="index" :value="cat" v-model="selectedCategories">{{ cat }}</b-form-checkbox>
           </b-form-checkbox-group>
         </b-form-group>
         <b-button @click="closeDropdown">취소</b-button>
-        <b-button @click="submitSelectedCategories" variant="success">확인</b-button>
+        <b-button @click="fetchDataWithSelectedCategories" variant="success">확인</b-button>
       </b-dropdown>
       <b-modal v-model="modalVisible" :title="modalTitle" hide-footer>
         <!-- Create.vue 컴포넌트 렌더링 -->
@@ -93,7 +93,7 @@
           <b-button @click="changePage(pageNumber + 1)" :disabled="pageNumber >= totalPage">다음 페이지</b-button>
        </div>
      </div>
-    </div>
+          </div>
   </div>
   </template>
   
@@ -142,31 +142,16 @@
     },
 
     methods: {
-      buttonVariant(consonants) {
-      // 선택된 자음 배열에 현재 버튼이 포함되어 있는지 확인
-      const isSelected = this.selectedConsonants.includes(consonants);
-      
-      // 전체 버튼인 경우
-      if (consonants === '전체') {
-        // 전체가 선택된 상태이면 빨간색, 아니면 파란색
-        return isSelected ? 'danger' : 'primary';
-      } else {
-        // 다른 자음 버튼인 경우
-        // 선택된 상태이면 빨간색, 아니면 파란색
-        return isSelected ? 'danger' : 'primary';
-      }
-    },
-
-      fetchData1(page, keyword, consonants, ) {
+      fetchData1(page, keyword) {
         page = Number(page);
-    
+  
         let apiUrl = `http://192.168.0.149:8000/saying`;
         if (keyword) {
           apiUrl += `/filter/?keyword=${keyword}`;
         } else {
           apiUrl += `?p=${page}`;
         }
-    
+  
         axios.get(apiUrl)
           .then(response => {
             this.totalPage = response.data.total_page;
@@ -201,10 +186,10 @@
           console.error('카테고리를 불러오는 중 오류 발생:', error);
         }
       },
-      async handleNewIdiom(newIdiom) {
-        this.items.push(newIdiom);
-        this.closeModal();
-      },
+      // async handleNewIdiom(newIdiom) {
+      //   this.items.push(newIdiom);
+      //   this.closeModal();
+      // },
       editItem(item) {
         this.isEditMode = true;
         this.editId = item.id;
@@ -259,23 +244,29 @@
         // 이전에 선택된 카테고리로 되돌립니다.
         this.selectedCategories = this.prevSelectedCategories;
       },
-      submitSelectedCategories() {
-      // 선택된 카테고리들을 백엔드에서 요구하는 형식에 맞게 가공합니다.
-      const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+    //   submitSelectedCategories() {
+    //   // 선택된 카테고리들을 백엔드에서 요구하는 형식에 맞게 가공합니다.
+    //   const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
 
-      axios.get(`http://192.168.0.149:8000/saying/filter/?${categoriesParams}&p=${this.pageNumber}`)
-        .then(response => {
-          console.log(response.data);
-          this.totalPage = response.data.total_page;
-          this.items = response.data.content; // 받아온 데이터를 items에 할당
-          // 드롭다운 박스를 닫습니다.
-          this.$refs.categoryDropdown.hide();
-        })
-        .catch(error => {
-          console.error('GET 요청 중 오류가 발생했습니다.', error);
-          // 오류 발생 시 처리할 내용을 추가할 수 있습니다.
-        });
-    },
+    //   axios.get(`http://192.168.0.149:8000/saying/filter/?${categoriesParams}&p=${this.pageNumber}`)
+    //     .then(response => {
+    //       console.log(response.data);
+    //       this.totalPage = response.data.total_page;
+    //       this.items = response.data.content; // 받아온 데이터를 items에 할당
+    //       // 드롭다운 박스를 닫습니다.
+    //       this.$refs.categoryDropdown.hide();
+    //     })
+    //     .catch(error => {
+    //       console.error('GET 요청 중 오류가 발생했습니다.', error);
+    //       // 오류 발생 시 처리할 내용을 추가할 수 있습니다.
+    //     });
+    // },
+    fetchDataWithSelectedCategories() {
+      const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+    console.log(categoriesParams); // 확인하고 싶은 변수를 콘솔에 출력
+    this.fetchData1(this.pageNumber, this.searchKeyword, null, categoriesParams);
+  },
+
       toggleDropdown() {
         // 드롭다운 박스를 열거나 닫습니다.
         this.$refs.categoryDropdown.toggle();
@@ -286,13 +277,14 @@
   
       changePage(page) {
   if (page > 0 && page <= this.totalPage) {
-    // 카테고리가 선택되어 있으면 선택된 카테고리로 데이터를 가져옵니다.
-    if (this.selectedCategories.length > 0) {
-      this.pageNumber = page;
-      this.submitSelectedCategories();
+    this.pageNumber = page;
+    if (this.selectedCategories.length > 0 || this.searchKeyword.trim() !== '') {
+      // 카테고리가 선택되어 있거나 검색어가 입력되어 있는 경우에만 필터링된 데이터를 가져옵니다.
+      const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+      this.fetchData1(page, this.searchKeyword, null, categoriesParams);
     } else {
-      // 카테고리가 선택되어 있지 않으면 기존의 fetchData 메소드를 사용하여 데이터를 가져옵니다.
-      this.fetchData1(page, this.searchKeyword);
+      // 카테고리가 선택되어 있지 않고 검색어가 입력되어 있지 않은 경우 전체 데이터를 가져옵니다.
+      this.fetchData1(page);
     }
   }
 },
