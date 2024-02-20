@@ -157,62 +157,65 @@ export default {
     }
   },
 
-   fetchData1(page, keyword, consonants, categoriesParams) {
-    page = Number(page);
+  fetchData1(page, keyword, consonants, categoriesParams) {
+  page = Number(page);
+  let apiUrl = `http://192.168.0.149:8000/fourchar/filter`;
 
-    let apiUrl = `http://192.168.0.149:8000/fourchar/filter/`;
-
-    const queryParams = [];
-
-    if (keyword) {
-        queryParams.push(`keyword=${keyword}`);
+  // 검색어가 있을 경우
+  if (keyword) {
+    apiUrl += `?keyword=${keyword}&p=${page}`;
+  }
+  // 자음 필터가 있을 경우
+  else if (consonants && consonants.length > 0) {
+    // 전체 자음이 선택된 경우
+    if (consonants.includes('전체')) {
+      apiUrl += `?p=${page}`;
+    } else {
+      const consonantString = consonants.join('&consonants=');
+      apiUrl += `?consonants=${consonantString}&p=${page}`;
     }
+  }
+  // 카테고리가 선택된 경우
+  else if (categoriesParams) {
+    apiUrl += `?${categoriesParams}&p=${page}`;
+  }
+  // 위의 조건들에 해당하지 않을 경우 기본 URL을 사용
+  else {
+    apiUrl += `?p=${page}`;
+  }
 
-    if (consonants && consonants.length > 0) {
-        const consonantString = consonants.join(',');
-        queryParams.push(`consonants=${consonantString}`);
-    }
-
-    if (categoriesParams) {
-        if (queryParams.length > 0) {
-            queryParams.push(`&${categoriesParams}`);
-        } else {
-            queryParams.push(categoriesParams);
-        }
-    }
-
-    queryParams.push(`p=${page}`);
-
-    apiUrl += `?${queryParams.join('&')}`;
-
-    console.log(apiUrl);
-    axios.get(apiUrl)
-        .then(response => {
-            console.log(response.data);
-            this.totalPage = response.data.total_page;
-            this.items = response.data.content;
-        })
-        .catch(error => {
-            console.error('데이터를 불러오는 중 오류 발생:', error);
-        });
+  console.log(apiUrl);
+  axios.get(apiUrl)
+    .then(response => {
+      console.log(response.data);
+      this.totalPage = response.data.total_page;
+      this.items = response.data.content;
+      // 각 아이템에 detailsShowing 프로퍼티 추가
+      this.items.forEach(item => {
+        this.$set(item, 'detailsShowing', false);
+      });
+    })
+    .catch(error => {
+      console.error('데이터를 불러오는 중 오류 발생:', error);
+    });
 },
 
-    toggleConsonants(consonants) {
+   toggleConsonants(consonants) {
       const index = this.selectedConsonants.indexOf(consonants);
 
       if (consonants === '전체') {
         // 전체 버튼일 경우
         if (index === -1) {
-          // 전체 버튼이 선택되지 않은 경우, 선택된 알파벳 배열에 전체 버튼을 추가하고 다른 알파벳 버튼을 비활성화
+          // 전체 버튼이 선택되지 않은 경우, 선택된 자음 배열에 전체 버튼을 추가하고 다른 자음 버튼을 비활성화
           this.selectedConsonants = ['전체'];
         } else {
-          // 전체 버튼이 이미 선택된 경우, 선택을 취소하고 모든 알파벳 버튼을 활성화
+          // 전체 버튼이 이미 선택된 경우, 선택을 취소하고 모든 자음 버튼을 활성화
           this.selectedConsonants = [];
         }
       } else {
-        // 다른 알파벳 버튼이 선택된 경우
+        // 다른 자음 버튼이 선택된 경우
         if (index === -1) {
-          // 선택되지 않은 경우, 선택된 알파벳 배열에 해당 버튼 추가
+          // 선택되지 않은 경우, 선택된  배열에 해당 버튼 추가
           this.selectedConsonants.push(consonants);
           // 만약 전체 버튼이 선택된 상태였다면 전체 버튼 선택 취소
           const allIndex = this.selectedConsonants.indexOf('전체');
