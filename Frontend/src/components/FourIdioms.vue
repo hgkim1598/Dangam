@@ -94,6 +94,12 @@ import axios from 'axios';
 import Create from './Create.vue';
 
 export default {
+  name: 'FourIdioms',
+  mounted() {
+    console.log('FourIdioms 컴포넌트가 마운트되었습니다.');
+    // 페이지가 로드될 때 첫 페이지로 이동하는 로직 추가
+    this.$router.push('/four');
+  },
   components: {
     Create
   },
@@ -287,6 +293,7 @@ export default {
     showModal() {
       this.modalVisible = true;
       this.editId = null; // editId 초기화
+      this.isEditMode = false; // isEditMode 초기화로 예상됨
     },
 
     closeModal() {
