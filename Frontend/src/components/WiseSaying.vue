@@ -220,6 +220,9 @@ export default {
           }
         }
 
+        // 페이지 번호를 1로 초기화하고 필터링된 데이터를 가져옵니다.
+        this.pageNumber = 1;
+
         // 전체가 선택되었는지 확인
         const isAllSelected = this.selectedConsonants.includes('전체');
 
@@ -341,7 +344,10 @@ export default {
     //     });
     // },
     fetchDataWithSelectedCategories() {
-      const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+    // 카테고리 선택 후 페이지 번호를 초기화합니다.
+    this.pageNumber = 1;
+    // 선택된 카테고리를 백엔드에서 요구하는 형식에 맞게 가공합니다.
+    const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
     console.log(categoriesParams); // 확인하고 싶은 변수를 콘솔에 출력
     this.fetchData1(this.pageNumber, this.searchKeyword, null, categoriesParams);
   },
