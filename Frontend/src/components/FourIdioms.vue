@@ -157,38 +157,45 @@ export default {
     }
   },
 
-    fetchData1(page, keyword, consonants, categoriesParams) {
-        page = Number(page);
+   fetchData1(page, keyword, consonants, categoriesParams) {
+    page = Number(page);
 
-        let apiUrl = `http://192.168.0.149:8000/fourchar`;
+    let apiUrl = `http://192.168.0.149:8000/fourchar/filter/`;
 
-        if (keyword) {
-          apiUrl += `/filter/?keyword=${keyword}&p=${page}`;
-        
-        } else if (this.selectedConsonants && this.selectedConsonants.length > 0) {
-          if (this.selectedConsonants.includes('전체')) {
-            apiUrl += `?p=${page}`;
-          } else {
-            const consonantString = this.selectedConsonants.join('&consonants=')
-            apiUrl += `/filter/?consonants=${consonantString}&p=${page}`;
-          }
-        }  else if (categoriesParams) {
-          apiUrl += `/filter/?${categoriesParams}&p=${page}`; // page 변수를 사용합니다.
-          this.$refs.categoryDropdown.hide();
+    const queryParams = [];
+
+    if (keyword) {
+        queryParams.push(`keyword=${keyword}`);
+    }
+
+    if (consonants && consonants.length > 0) {
+        const consonantString = consonants.join(',');
+        queryParams.push(`consonants=${consonantString}`);
+    }
+
+    if (categoriesParams) {
+        if (queryParams.length > 0) {
+            queryParams.push(`&${categoriesParams}`);
         } else {
-          apiUrl += `?p=${page}`;
+            queryParams.push(categoriesParams);
         }
-        console.log(apiUrl);
-        axios.get(apiUrl)
-          .then(response => {
+    }
+
+    queryParams.push(`p=${page}`);
+
+    apiUrl += `?${queryParams.join('&')}`;
+
+    console.log(apiUrl);
+    axios.get(apiUrl)
+        .then(response => {
             console.log(response.data);
             this.totalPage = response.data.total_page;
             this.items = response.data.content;
-          })
-          .catch(error => {
+        })
+        .catch(error => {
             console.error('데이터를 불러오는 중 오류 발생:', error);
-          });
-      },
+        });
+},
 
     toggleConsonants(consonants) {
       const index = this.selectedConsonants.indexOf(consonants);

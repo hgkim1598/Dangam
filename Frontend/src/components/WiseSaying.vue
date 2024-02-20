@@ -102,6 +102,11 @@ import axios from 'axios';
 import CreateWise from './CreateWise.vue';
   
 export default {
+  name: 'WiseSaying',
+  mounted() {
+    // 페이지가 로드될 때 첫 페이지로 이동하는 로직 추가
+    this.$router.push('/wise');
+  },
   components: {
     CreateWise
   },
@@ -186,6 +191,10 @@ export default {
             console.log(response.data);
             this.totalPage = response.data.total_page;
             this.items = response.data.content;
+            // 각 아이템에 detailsShowing 프로퍼티 추가
+            this.items.forEach(item => {
+            this.$set(item, 'detailsShowing', false);
+          });
           })
           .catch(error => {
             console.error('데이터를 불러오는 중 오류 발생:', error);
