@@ -1,29 +1,30 @@
 <template>
   <div>
-    &emsp;
     <h2>사자성어 데이터</h2>
+
     <!-- 자음 필터 -->
-    <h6>사자성어(한글) 선택</h6>
-    <div>
-      <b-button
-        v-for="consonants in consonants"
-        :key="consonants"
-        @click="toggleConsonants(consonants)"
-        :variant="buttonVariant(consonants)"
-      >
-        {{ consonants }}
-      </b-button>
-    </div>
-    <!-- 검색어 입력 상자 -->
-    <div>
-      <input type="text" v-model="searchKeyword" class="oval-input">
+      <div>
+        <b-button
+          v-for="consonants in consonants"
+          :key="consonants"
+          @click="toggleConsonants(consonants)"
+          :variant="buttonVariant(consonants)"
+        >
+          {{ consonants }}
+        </b-button>
+      </div>
+
       <!-- 검색 버튼 -->
-      <b-button @click="search">
-        <!-- 돋보기 아이콘 -->
-        <b-icon icon="search"></b-icon>
-      </b-button>
-    </div>
-    
+      <div>
+        <b-input-group>
+          <input type="text" v-model="searchKeyword" class="oval-input">
+            <b-button @click="search" variant="outline-secondary">
+            <!-- 돋보기 아이콘 -->
+            <b-icon icon="search"></b-icon>
+           </b-button>
+         </b-input-group>
+      </div>
+
   <div class="table-container">
     <b-button @click="showModal" class="nr_button">신규 등록</b-button>
     <b-dropdown v-if="categories.length > 0" ref="categoryDropdown" class="category-dropdown" variant="primary">
@@ -76,16 +77,16 @@
     </b-table>
   </div>
   <div>
-          <!-- 페이지 번호 표시 및 변경 -->
+    <!-- 페이지 번호 표시 및 변경 -->
     <div class="d-flex justify-content-end">
       <div>
         <b-button @click="changePage(pageNumber - 1)" :disabled="pageNumber <= 1">이전 페이지</b-button>
         <span>{{ pageNumber }} / {{ totalPage }}</span>
         <b-button @click="changePage(pageNumber + 1)" :disabled="pageNumber >= totalPage">다음 페이지</b-button>
-     </div>
-   </div>
-        </div>
-</div>
+      </div>
+    </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -93,6 +94,12 @@ import axios from 'axios';
 import Create from './Create.vue';
 
 export default {
+  name: 'FourIdioms',
+  mounted() {
+    console.log('FourIdioms 컴포넌트가 마운트되었습니다.');
+    // 페이지가 로드될 때 첫 페이지로 이동하는 로직 추가
+    this.$router.push('/four');
+  },
   components: {
     Create
   },
@@ -122,80 +129,87 @@ export default {
       selectedConsonants: [] // 선택된 자음 배열
     };
   },
+
   created() {
     this.fetchData();
     this.fetchCategories(); // 카테고리 데이터 가져오기
   },
+
   computed: {
     modalTitle() {
       return this.isEditMode ? '수정' : '신규 등록';
     }
   },
+
   methods: {
-      buttonVariant(consonants) {
-      // 선택된 자음 배열에 현재 버튼이 포함되어 있는지 확인
-      const isSelected = this.selectedConsonants.includes(consonants);
+    buttonVariant(consonants) {
+    // 선택된 자음 배열에 현재 버튼이 포함되어 있는지 확인
+    const isSelected = this.selectedConsonants.includes(consonants);
       
-      // 전체 버튼인 경우
-      if (consonants === '전체') {
-        // 전체가 선택된 상태이면 빨간색, 아니면 파란색
-        return isSelected ? 'danger' : 'primary';
-      } else {
-        // 다른 자음 버튼인 경우
-        // 선택된 상태이면 빨간색, 아니면 파란색
-        return isSelected ? 'danger' : 'primary';
-      }
-    },
+    // 전체 버튼인 경우
+    if (consonants === '전체') {
+      // 전체가 선택된 상태이면 빨간색, 아니면 파란색
+      return isSelected ? 'danger' : 'primary';
+     } else {
+      // 다른 자음 버튼인 경우
+      // 선택된 상태이면 빨간색, 아니면 파란색
+      return isSelected ? 'danger' : 'primary';
+    }
+  },
 
     fetchData1(page, keyword, consonants, categoriesParams) {
-      page = Number(page);
+        page = Number(page);
 
-      let apiUrl = `http://192.168.0.149:8000/fourchar`;
+        let apiUrl = `http://192.168.0.149:8000/fourchar`;
 
-      if (keyword) {
-        apiUrl += `/filter/?keyword=${keyword}&p=${page}`;
-      
-      } else if (this.selectedConsonants && this.selectedConsonants.length > 0) {
-        if (this.selectedConsonants.includes('전체')) {
-          apiUrl += `?p=${page}`;
+        if (keyword) {
+          apiUrl += `/filter/?keyword=${keyword}&p=${page}`;
+        
+        } else if (this.selectedConsonants && this.selectedConsonants.length > 0) {
+          if (this.selectedConsonants.includes('전체')) {
+            apiUrl += `?p=${page}`;
+          } else {
+            const consonantString = this.selectedConsonants.join('&consonants=')
+            apiUrl += `/filter/?consonants=${consonantString}&p=${page}`;
+          }
+        }  else if (categoriesParams) {
+          apiUrl += `/filter/?${categoriesParams}&p=${page}`; // page 변수를 사용합니다.
+          this.$refs.categoryDropdown.hide();
         } else {
-          const consonantString = this.selectedConsonants.join('&consonants=') // 선택된 자음을 쉼표로 구분된 문자열로 변환
-          apiUrl += `/filter/?consonants=${consonantString}&p=${page}`;
+          apiUrl += `?p=${page}`;
         }
-      }  else if (categoriesParams) {
-        apiUrl += `/filter/?${categoriesParams}&p=${page}`; // page 변수를 사용합니다.
-        this.$refs.categoryDropdown.hide();
-      } else {
-        apiUrl += `?p=${page}`;
-      }
-      console.log(apiUrl);
-      axios.get(apiUrl)
-        .then(response => {
-          console.log(response.data);
-          this.totalPage = response.data.total_page;
-          this.items = response.data.content;
-        })
-        .catch(error => {
-          console.error('데이터를 불러오는 중 오류 발생:', error);
+        console.log(apiUrl);
+        axios.get(apiUrl)
+          .then(response => {
+            console.log(response.data);
+            this.totalPage = response.data.total_page;
+            this.items = response.data.content;
+            // 각 아이템에 detailsShowing 프로퍼티 추가
+            this.items.forEach(item => {
+            this.$set(item, 'detailsShowing', false);
         });
-    },
+          })
+          .catch(error => {
+            console.error('데이터를 불러오는 중 오류 발생:', error);
+          });
+      },
 
-    async toggleConsonants(consonants) {
+    toggleConsonants(consonants) {
       const index = this.selectedConsonants.indexOf(consonants);
 
       if (consonants === '전체') {
         // 전체 버튼일 경우
         if (index === -1) {
-          // 전체 버튼이 선택되지 않은 경우, 선택된 자음 배열에 전체 버튼을 추가하고 다른 자음 버튼을 비활성화
+          // 전체 버튼이 선택되지 않은 경우, 선택된 알파벳 배열에 전체 버튼을 추가하고 다른 알파벳 버튼을 비활성화
           this.selectedConsonants = ['전체'];
         } else {
-          // 전체 버튼이 이미 선택된 경우, 선택을 취소하고 모든 자음 버튼을 활성화
+          // 전체 버튼이 이미 선택된 경우, 선택을 취소하고 모든 알파벳 버튼을 활성화
           this.selectedConsonants = [];
         }
       } else {
-        // 다른 자음 버튼이 선택된 경우
+        // 다른 알파벳 버튼이 선택된 경우
         if (index === -1) {
-          // 선택되지 않은 경우, 선택된 자음 배열에 해당 버튼 추가
+          // 선택되지 않은 경우, 선택된 알파벳 배열에 해당 버튼 추가
           this.selectedConsonants.push(consonants);
           // 만약 전체 버튼이 선택된 상태였다면 전체 버튼 선택 취소
           const allIndex = this.selectedConsonants.indexOf('전체');
@@ -208,16 +222,20 @@ export default {
         }
       }
 
+      // 페이지 번호를 1로 초기화하고 필터링된 데이터를 가져옵니다.
+      this.pageNumber = 1;
+      this.fetchData1(this.pageNumber, this.searchKeyword, this.selectedConsonants);
+
       // 전체가 선택되었는지 확인
       const isAllSelected = this.selectedConsonants.includes('전체');
 
       // 전체가 선택되지 않은 경우
       if (!isAllSelected) {
         // 전체가 선택되지 않았을 때 데이터 가져오기
-        await this.fetchData1(this.pageNumber, this.searchKeyword, this.selectedConsonants);
+        this.fetchData1(1, this.searchKeyword, this.selectedConsonants);
       } else {
         // 전체가 선택된 경우 전체 데이터 가져오기
-        await this.fetchData();
+        this.fetchData();
       }
     },
 
@@ -237,6 +255,7 @@ export default {
         console.error('데이터를 불러오는 중 오류 발생:', error);
       }
     },
+
     async fetchCategories() {
       try {
         const apiUrl = 'http://192.168.0.149:8000/category/?select_category=fourchar';
@@ -246,15 +265,18 @@ export default {
         console.error('카테고리를 불러오는 중 오류 발생:', error);
       }
     },
+
     async handleNewIdiom(newIdiom) {
       this.items.push(newIdiom);
       this.closeModal();
     },
+    
     editItem(item) {
       this.isEditMode = true;
       this.editId = item.id;
       this.modalVisible = true; // 모달 열기
     },
+
     async deleteItem(item) {
       const confirmDelete = confirm('삭제하시겠습니까?');
       if (confirmDelete) {
@@ -271,10 +293,12 @@ export default {
         location.reload();
       }
     },
+
     showModal() {
       this.modalVisible = true;
       this.editId = null; // editId 초기화
     },
+
     closeModal() {
       this.modalVisible = false;
       // 모달을 닫습니다.
@@ -288,6 +312,7 @@ export default {
       this.isEditMode = false;
       this.editId = null;
     },
+
     truncateText(text, maxLength) {
       if (text.length <= maxLength) {
         return text;
@@ -295,15 +320,18 @@ export default {
         return text.substring(0, maxLength) + '...';
       }
     },
+
     toggleDetails(item) {
       item.detailsShowing = !item.detailsShowing;
     },
+
     closeDropdown() {
       // 드롭다운 박스를 닫습니다.
       this.$refs.categoryDropdown.hide();
       // 이전에 선택된 카테고리로 되돌립니다.
       this.selectedCategories = this.prevSelectedCategories;
     },
+
     // submitSelectedCategories() {
     //   // 선택된 카테고리들을 백엔드에서 요구하는 형식에 맞게 가공합니다.
     //   const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
@@ -322,7 +350,10 @@ export default {
     //     });
     // },
     fetchDataWithSelectedCategories() {
-      const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+    // 카테고리 선택 후 페이지 번호를 초기화합니다.
+    this.pageNumber = 1;
+    // 선택된 카테고리를 백엔드에서 요구하는 형식에 맞게 가공합니다.
+    const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
     console.log(categoriesParams); // 확인하고 싶은 변수를 콘솔에 출력
     this.fetchData1(this.pageNumber, this.searchKeyword, null, categoriesParams);
   },
@@ -334,20 +365,19 @@ export default {
       this.prevSelectedCategories = [...this.selectedCategories];
     },
 
-
     changePage(page) {
-  if (page > 0 && page <= this.totalPage) {
-    this.pageNumber = page;
-    if (this.selectedCategories.length > 0 || this.searchKeyword.trim() !== '') {
-      // 카테고리가 선택되어 있거나 검색어가 입력되어 있는 경우에만 필터링된 데이터를 가져옵니다.
-      const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
-      this.fetchData1(page, this.searchKeyword, null, categoriesParams);
-    } else {
-      // 카테고리가 선택되어 있지 않고 검색어가 입력되어 있지 않은 경우 전체 데이터를 가져옵니다.
-      this.fetchData1(page);
-    }
-  }
-},
+      if (page > 0 && page <= this.totalPage) {
+        this.pageNumber = page;
+        if (this.selectedCategories.length > 0 || this.searchKeyword.trim() !== '') {
+          // 카테고리가 선택되어 있거나 검색어가 입력되어 있는 경우에만 필터링된 데이터를 가져옵니다.
+          const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+          this.fetchData1(page, this.searchKeyword, null, categoriesParams);
+        } else {
+          // 카테고리가 선택되어 있지 않고 검색어가 입력되어 있지 않은 경우 전체 데이터를 가져옵니다.
+          this.fetchData1(page);
+        }
+      }
+    },
 
     search() {
       const trimmedKeyword = this.searchKeyword.trim();
@@ -405,4 +435,12 @@ export default {
   width: 250px; /* 너비 설정 */
   border: 2px solid #ccc; /* 테두리 설정 */
 }
+
+h2 {
+  float: left;
+  margin-left: 20px; /* 왼쪽으로부터의 여백 설정 */
+  margin-right: 5px; /* 원하는 만큼 간격 설정 */
+  margin-top: 30px; /* 원하는 만큼 위로 떨어뜨릴 수 있습니다. */
+}
+
 </style>
