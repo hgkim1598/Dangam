@@ -1,29 +1,30 @@
 <template>
   <div>
-    &emsp;
     <h2>사자성어 데이터</h2>
+
     <!-- 자음 필터 -->
-    <h6>사자성어(한글) 선택</h6>
-    <div>
-      <b-button
-        v-for="consonants in consonants"
-        :key="consonants"
-        @click="toggleConsonants(consonants)"
-        :variant="buttonVariant(consonants)"
-      >
-        {{ consonants }}
-      </b-button>
-    </div>
-    <!-- 검색어 입력 상자 -->
-    <div>
-      <input type="text" v-model="searchKeyword" class="oval-input">
+      <div>
+        <b-button
+          v-for="consonants in consonants"
+          :key="consonants"
+          @click="toggleConsonants(consonants)"
+          :variant="buttonVariant(consonants)"
+        >
+          {{ consonants }}
+        </b-button>
+      </div>
+
       <!-- 검색 버튼 -->
-      <b-button @click="search">
-        <!-- 돋보기 아이콘 -->
-        <b-icon icon="search"></b-icon>
-      </b-button>
-    </div>
-    
+      <div>
+        <b-input-group>
+          <input type="text" v-model="searchKeyword" class="oval-input">
+            <b-button @click="search" variant="outline-secondary">
+            <!-- 돋보기 아이콘 -->
+            <b-icon icon="search"></b-icon>
+           </b-button>
+         </b-input-group>
+      </div>
+
   <div class="table-container">
     <b-button @click="showModal" class="nr_button">신규 등록</b-button>
     <b-dropdown v-if="categories.length > 0" ref="categoryDropdown" class="category-dropdown" variant="primary">
@@ -42,7 +43,7 @@
       <!-- Create.vue 컴포넌트 렌더링 -->
       <Create :isEditMode="isEditMode" :editId="editId" @closeModal="closeModal" />
     </b-modal>
-    <b-table :items="items" :fields="fields" bordered hover>
+    <b-table striped hover :items="items" :fields="fields">
       <template #cell(actions)="row">
         <!-- 제어 버튼 -->
         <div class="btn-group" role="group">
@@ -84,7 +85,7 @@
         <b-button @click="changePage(pageNumber + 1)" :disabled="pageNumber >= totalPage">다음 페이지</b-button>
      </div>
    </div>
-        </div>
+  </div>
 </div>
 </template>
 
@@ -404,6 +405,13 @@ export default {
   padding: 10px 20px; /* 내부 여백 설정 */
   width: 250px; /* 너비 설정 */
   border: 2px solid #ccc; /* 테두리 설정 */
+}
+
+h2 {
+  float: left;
+  margin-left: 20px; /* 왼쪽으로부터의 여백 설정 */
+  margin-right: 5px; /* 원하는 만큼 간격 설정 */
+  margin-top: 30px; /* 원하는 만큼 위로 떨어뜨릴 수 있습니다. */
 }
 
 </style>

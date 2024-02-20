@@ -1,15 +1,31 @@
 <template>
-    <div>
-    <div class="table-container">
-    <!-- 검색어 입력 상자 -->
+  <div>
+    <h2>명언 데이터</h2>
+
+    <!-- 알파벳 필터 -->
       <div>
-        <input type="text" v-model="searchKeyword">
-        <!-- 검색 버튼 -->
-        <b-button @click="search">
-          <!-- 돋보기 아이콘 -->
-          <b-icon icon="search"></b-icon>
+        <b-button
+          v-for="consonants in consonants"
+          :key="consonants"
+          @click="toggleConsonants(consonants)"
+          :variant="buttonVariant(consonants)"
+        >
+          {{ consonants }}
         </b-button>
       </div>
+      
+      <!-- 검색 버튼 -->
+      <div>
+        <b-input-group>
+          <input type="text" v-model="searchKeyword" class="oval-input">
+            <b-button @click="search" variant="outline-secondary">
+            <!-- 돋보기 아이콘 -->
+            <b-icon icon="search"></b-icon>
+          </b-button>
+        </b-input-group>
+      </div>
+
+    <div class="table-container">
       <b-button @click="showModal" class="nr_button">신규 등록</b-button>
       <b-dropdown v-if="categories.length > 0" ref="categoryDropdown" class="category-dropdown" variant="primary">
         <template #button-content>
@@ -77,7 +93,7 @@
           <b-button @click="changePage(pageNumber + 1)" :disabled="pageNumber >= totalPage">다음 페이지</b-button>
        </div>
      </div>
-          </div>
+    </div>
   </div>
   </template>
   
@@ -105,12 +121,14 @@
           { key: 'contents_kr', label: '영문 뜻 풀이' },
           { key: 'actions', label: '제어', class: 'text-center', thClass: 'text-center', sortable: false }
         ],
+        consonants: [ 'All', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' ], // 알파벳 배열
         items: [],
         rows: [],
         infoModal: { id: 'info-modal', title: '', content: '' },
         categories: [], // 카테고리 배열
         selectedCategories: [], // 선택된 카테고리 배열
         prevSelectedCategories: [], // 이전 선택된 카테고리 배열
+        selectedConsonants: [] // 선택된 알파벳 배열
       };
     },
     created() {
@@ -122,17 +140,33 @@
         return this.isEditMode ? '수정' : '신규 등록';
       }
     },
+
     methods: {
-      fetchData1(page, keyword) {
+      buttonVariant(consonants) {
+      // 선택된 자음 배열에 현재 버튼이 포함되어 있는지 확인
+      const isSelected = this.selectedConsonants.includes(consonants);
+      
+      // 전체 버튼인 경우
+      if (consonants === '전체') {
+        // 전체가 선택된 상태이면 빨간색, 아니면 파란색
+        return isSelected ? 'danger' : 'primary';
+      } else {
+        // 다른 자음 버튼인 경우
+        // 선택된 상태이면 빨간색, 아니면 파란색
+        return isSelected ? 'danger' : 'primary';
+      }
+    },
+
+      fetchData1(page, keyword, consonants, ) {
         page = Number(page);
-  
+    
         let apiUrl = `http://192.168.0.149:8000/saying`;
         if (keyword) {
           apiUrl += `/filter/?keyword=${keyword}`;
         } else {
           apiUrl += `?p=${page}`;
         }
-  
+    
         axios.get(apiUrl)
           .then(response => {
             this.totalPage = response.data.total_page;
@@ -270,7 +304,8 @@
         }
       },
     }
-  };
+  }
+  
   </script>
   
   <style scoped>
@@ -311,4 +346,19 @@
     max-height: 200px; /* 드롭다운 박스의 최대 높이 설정 */
     overflow-y: auto; /* 수직 스크롤을 활성화합니다. */
   }
+
+  .oval-input {
+  border-radius: 50px; /* 타원형으로 만들기 위해 반지름 설정 */
+  padding: 10px 20px; /* 내부 여백 설정 */
+  width: 250px; /* 너비 설정 */
+  border: 2px solid #ccc; /* 테두리 설정 */
+  }
+
+  h2 {
+    float: left;
+    margin-left: 20px; /* 왼쪽으로부터의 여백 설정 */
+    margin-right: 5px; /* 원하는 만큼 간격 설정 */
+    margin-top: 30px; /* 원하는 만큼 위로 떨어뜨릴 수 있습니다. */
+  }
+
   </style>
