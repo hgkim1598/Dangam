@@ -300,6 +300,7 @@ export default {
       showModal() {
         this.modalVisible = true;
         this.editId = null; // editId 초기화
+        this.isEditMode = false; // isEditMode 초기화로 예상됨
       },
 
       closeModal() {
