@@ -5,7 +5,7 @@
     <!-- 피리터 및 버튼들 정렬 -->
     <div class="filter-buttons">
       <!-- 카테고리 필터-->
-      <b-dropdown v-if="categories.length > 0" ref="categoryDropdown" class="category-dropdown" variant="primary">
+      <b-dropdown v-if="categories.length > 0" ref="categoryDropdown" class="category-dropdown" variant="">
         <template #button-content>
           카테고리 선택
         </template>
@@ -166,11 +166,11 @@ export default {
     // 전체 버튼인 경우
     if (consonants === '전체') {
       // 전체가 선택된 상태이면 빨간색, 아니면 파란색
-      return isSelected ? 'danger' : 'primary';
+      return isSelected ? 'danger' : 'light';
     } else {
       // 다른 자음 버튼인 경우
       // 선택된 상태이면 빨간색, 아니면 파란색
-      return isSelected ? 'danger' : 'primary';
+      return isSelected ? 'danger' : 'light';
     }
   },
 
@@ -186,7 +186,7 @@ export default {
   }
 
   if (consonants && consonants.length > 0) {
-    const consonantString = consonants.join(',');
+    const consonantString = consonants.join('&consonants=');
     queryParams.push(`consonants=${consonantString}`);
   }
 

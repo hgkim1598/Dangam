@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-navbar toggleable="lg" type="dark" variant="info">
+        <b-navbar type="dark" class="my-navbar">
             <b-navbar-brand href="/four">Dangam🧧</b-navbar-brand>
             <b-navbar-toggle target="nav_collapse"/>
             <b-collapse is-nav id="nav_collapse">
@@ -22,3 +22,9 @@ export default {
     }
 }
 </script>
+
+<style>
+.my-navbar {
+    background-color: #EB4C10; /* 이 색상에 대한 CSS 클래스를 정의합니다. */
+}
+</style>
