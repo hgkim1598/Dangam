@@ -201,6 +201,7 @@ fetchDataWithSelectedCategories() {
   const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
   console.log(categoriesParams); // 확인하고 싶은 변수를 콘솔에 출력
   // fetchData1을 호출하여 데이터를 가져옵니다.
+  this.pageNumber = 1;
   this.fetchData1(this.pageNumber, this.searchKeyword, this.selectedConsonants, categoriesParams);
 },
 
@@ -371,12 +372,17 @@ fetchDataWithSelectedCategories() {
     },
 
     search() {
-      const trimmedKeyword = this.searchKeyword.trim();
-      if (trimmedKeyword !== '') {
-        this.pageNumber = 1; // 검색할 때 페이지 번호를 1로 초기화합니다.
-        this.fetchData1(this.pageNumber, trimmedKeyword, null); // 검색 시 검색어도 함께 전달
-      }
-    },
+  // 검색어가 비어 있는지 확인
+  const trimmedKeyword = this.searchKeyword.trim();
+  
+  // 카테고리 선택과 자음 필터를 모두 적용하여 카테고리 쿼리를 생성
+  const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+  
+  // fetchData1 함수를 호출하여 새로운 검색 결과를 가져옵니다.
+  this.fetchData1(this.pageNumber, trimmedKeyword, this.selectedConsonants, categoriesParams);
+},
+
+
   }
 };
 </script>
