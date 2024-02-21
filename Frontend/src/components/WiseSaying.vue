@@ -167,7 +167,7 @@ export default {
   fetchData1(page, keyword, consonants, categoriesParams) {
   page = Number(page);
 
-  let apiUrl = `http://192.168.0.149:8000/saying/filter/`;
+  let apiUrl = `https://quotes.api.thegam.io/saying/filter/`;
 
   const queryParams = [];
 
@@ -247,7 +247,7 @@ toggleConsonants(consonants) {
       async fetchData(page) {
         try {
           page = 1;
-          let apiUrl = 'http://192.168.0.149:8000/saying';
+          let apiUrl = 'https://quotes.api.thegam.io/saying';
           const apiUrl1 = apiUrl += `?p=${page}`;
           const response = await axios.get(apiUrl1);
           this.totalPage = response.data.total_page;
@@ -263,17 +263,14 @@ toggleConsonants(consonants) {
 
       async fetchCategories() {
         try {
-          const apiUrl = 'http://192.168.0.149:8000/category/?select_category=saying';
+          const apiUrl = 'https://quotes.api.thegam.io/category/?select_category=saying';
           const response = await axios.get(apiUrl);
           this.categories = response.data; // 카테고리 배열에 데이터 저장
         } catch (error) {
           console.error('카테고리를 불러오는 중 오류 발생:', error);
         }
       },
-      // async handleNewIdiom(newIdiom) {
-      //   this.items.push(newIdiom);
-      //   this.closeModal();
-      // },
+
       editItem(item) {
         this.isEditMode = true;
         this.editId = item.id;
@@ -283,7 +280,7 @@ toggleConsonants(consonants) {
         const confirmDelete = confirm('삭제하시겠습니까?');
         if (confirmDelete) {
           try {
-            await axios.delete(`http://192.168.0.149:8000/saying/delete/${item.id}`);
+            await axios.delete(`https://quotes.api.thegam.io/saying/delete/${item.id}`);
             const index = this.items.findIndex(i => i.id === item.id);
             if (index !== -1) {
               this.items.splice(index, 1);
@@ -334,24 +331,6 @@ toggleConsonants(consonants) {
         // 이전에 선택된 카테고리로 되돌립니다.
         this.selectedCategories = this.prevSelectedCategories;
       },
-
-    //   submitSelectedCategories() {
-    //   // 선택된 카테고리들을 백엔드에서 요구하는 형식에 맞게 가공합니다.
-    //   const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
-
-    //   axios.get(`http://192.168.0.149:8000/saying/filter/?${categoriesParams}&p=${this.pageNumber}`)
-    //     .then(response => {
-    //       console.log(response.data);
-    //       this.totalPage = response.data.total_page;
-    //       this.items = response.data.content; // 받아온 데이터를 items에 할당
-    //       // 드롭다운 박스를 닫습니다.
-    //       this.$refs.categoryDropdown.hide();
-    //     })
-    //     .catch(error => {
-    //       console.error('GET 요청 중 오류가 발생했습니다.', error);
-    //       // 오류 발생 시 처리할 내용을 추가할 수 있습니다.
-    //     });
-    // },
 
     toggleDropdown() {
       // 드롭다운 박스를 열거나 닫습니다.
