@@ -25,7 +25,7 @@
         :key="consonants"
         @click="toggleConsonants(consonants)"
         :variant="buttonVariant(consonants)"
-        size="lg"
+        size="mg"
       >
         {{ consonants }}
       </b-button>
