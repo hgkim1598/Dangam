@@ -25,7 +25,7 @@
           :key="consonants"
           @click="toggleConsonants(consonants)"
           :variant="buttonVariant(consonants)"
-          size="sm"
+          size="lg"
         >
           {{ consonants }}
       </b-button>
@@ -425,7 +425,7 @@ export default {
   top: 0; /* 부모 요소 상단에 위치 */
   right: 0; /* 부모 요소 오른쪽에 위치 */
   margin-top: -40px; /* 테이블과 겹치지 않도록 버튼을 위로 올림 */
-  margin-right: 60px; /* 오른쪽 여백 설정 */
+  margin-right: 20px; /* 오른쪽 여백 설정 */
 }
 
 .category-dropdown {
@@ -434,7 +434,7 @@ export default {
   top: 0; /* 부모 요소 상단에 위치 */
   left: 0; /* 부모 요소 왼쪽에 위치 */
   margin-top: -40px; /* 테이블과 겹치지 않도록 드롭다운 박스를 위로 올림 */
-  margin-left: 30px; /* 왼쪽 여백 설정 */
+  margin-left: 20px; /* 왼쪽 여백 설정 */
 }
 
 .category-checkbox {
@@ -449,7 +449,7 @@ export default {
 .oval-input {
   border-radius: 50px; /* 타원형으로 만들기 위해 반지름 설정 */
   padding: 10px 20px; /* 내부 여백 설정 */
-  width: 250px; /* 너비 설정 */
+  width: 200px; /* 너비 설정 */
   border: 2px solid #ccc; /* 테두리 설정 */
 }
 
