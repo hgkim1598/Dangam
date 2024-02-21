@@ -157,50 +157,50 @@ export default {
     }
   },
 
-  fetchData1(page, keyword, consonants, categoriesParams) {
-  page = Number(page);
-  let apiUrl = `http://192.168.0.149:8000/fourchar/filter`;
+    fetchData1(page, keyword, consonants, categoriesParams) {
+      page = Number(page);
+      let apiUrl = `http://192.168.0.149:8000/fourchar`;
 
-  // 검색어가 있을 경우
-  if (keyword) {
-    apiUrl += `?keyword=${keyword}&p=${page}`;
-  }
-  // 자음 필터가 있을 경우
-  else if (consonants && consonants.length > 0) {
-    // 전체 자음이 선택된 경우
-    if (consonants.includes('전체')) {
-      apiUrl += `?p=${page}`;
-    } else {
-      const consonantString = consonants.join('&consonants=');
-      apiUrl += `?consonants=${consonantString}&p=${page}`;
-    }
-  }
-  // 카테고리가 선택된 경우
-  else if (categoriesParams) {
-    apiUrl += `?${categoriesParams}&p=${page}`;
-  }
-  // 위의 조건들에 해당하지 않을 경우 기본 URL을 사용
-  else {
-    apiUrl += `?p=${page}`;
-  }
+      // 검색어가 있을 경우
+      if (keyword) {
+        apiUrl += `/filter/?keyword=${keyword}&p=${page}`;
+      }
+      // 자음 필터가 있을 경우
+      else if (consonants && consonants.length > 0) {
+        // 전체 자음이 선택된 경우
+        if (consonants.includes('전체')) {
+          apiUrl += `/?p=${page}`;
+        } else {
+          const consonantString = consonants.join('&consonants=');
+          apiUrl += `/filter/?consonants=${consonantString}&p=${page}`;
+        }
+      }
+      // 카테고리가 선택된 경우
+      else if (categoriesParams) {
+        apiUrl += `/filter/?${categoriesParams}&p=${page}`;
+      }
+      // 위의 조건들에 해당하지 않을 경우 기본 URL을 사용
+      else {
+        apiUrl += `/?p=${page}`;
+      }
 
-  console.log(apiUrl);
-  axios.get(apiUrl)
-    .then(response => {
-      console.log(response.data);
-      this.totalPage = response.data.total_page;
-      this.items = response.data.content;
-      // 각 아이템에 detailsShowing 프로퍼티 추가
-      this.items.forEach(item => {
-        this.$set(item, 'detailsShowing', false);
-      });
-    })
-    .catch(error => {
-      console.error('데이터를 불러오는 중 오류 발생:', error);
-    });
-},
+      console.log(apiUrl);
+      axios.get(apiUrl)
+        .then(response => {
+          console.log(response.data);
+          this.totalPage = response.data.total_page;
+          this.items = response.data.content;
+          // 각 아이템에 detailsShowing 프로퍼티 추가
+          this.items.forEach(item => {
+            this.$set(item, 'detailsShowing', false);
+          });
+        })
+        .catch(error => {
+          console.error('데이터를 불러오는 중 오류 발생:', error);
+        });
+    },
 
-   toggleConsonants(consonants) {
+    toggleConsonants(consonants) {
       const index = this.selectedConsonants.indexOf(consonants);
 
       if (consonants === '전체') {
