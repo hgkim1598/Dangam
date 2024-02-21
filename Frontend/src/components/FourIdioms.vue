@@ -2,81 +2,88 @@
   <div>
     <h2>사자성어 데이터</h2>
 
-    <!-- 자음 필터 -->
-      <div>
-        <b-button
-          v-for="consonants in consonants"
-          :key="consonants"
-          @click="toggleConsonants(consonants)"
-          :variant="buttonVariant(consonants)"
-        >
-          {{ consonants }}
-        </b-button>
+    <!-- 필터 및 버튼들 정렬 -->
+    <div class="filter-buttons">
+      <!-- 카테고리 필터 -->
+      <b-dropdown v-if="categories.length > 0" ref="categoryDropdown" class="category-dropdown" variant="primary">
+        <template #button-content>
+          카테고리 선택
+        </template>
+        <b-form-group  class="category-dropdown-list">
+          <b-form-checkbox-group v-model="selectedCategories">
+            <b-form-checkbox v-for="(cat, index) in categories" :key="index" :value="cat" v-model="selectedCategories">{{ cat }}</b-form-checkbox>
+          </b-form-checkbox-group>
+        </b-form-group>
+        <b-button @click="closeDropdown">취소</b-button>
+        <b-button @click="fetchDataWithSelectedCategories" variant="success">확인</b-button>
+      </b-dropdown>
+
+      <!-- 자음 필터 -->
+      <div class="inline-button">
+      <b-button
+        v-for="consonants in consonants"
+        :key="consonants"
+        @click="toggleConsonants(consonants)"
+        :variant="buttonVariant(consonants)"
+        size="lg"
+      >
+        {{ consonants }}
+      </b-button>
       </div>
 
       <!-- 검색 버튼 -->
-      <div>
-        <b-input-group>
-          <input type="text" v-model="searchKeyword" class="oval-input">
-            <b-button @click="search" variant="outline-secondary">
-            <!-- 돋보기 아이콘 -->
-            <b-icon icon="search"></b-icon>
-           </b-button>
-         </b-input-group>
-      </div>
+      <div class="search-button">
+      <b-input-group>
+        <input type="text" v-model="searchKeyword" class="oval-input">
+        <b-button @click="search" variant="outline-secondary">
+          <!-- 돋보기 아이콘 -->
+          <b-icon icon="search"></b-icon>
+        </b-button>
+      </b-input-group>
+    </div>
 
-  <div class="table-container">
-    <b-button @click="showModal" class="nr_button">신규 등록</b-button>
-    <b-dropdown v-if="categories.length > 0" ref="categoryDropdown" class="category-dropdown" variant="primary">
-      <template #button-content>
-        카테고리 선택
-      </template>
-      <b-form-group  class="category-dropdown-list">
-        <b-form-checkbox-group v-model="selectedCategories">
-          <b-form-checkbox v-for="(cat, index) in categories" :key="index" :value="cat" v-model="selectedCategories">{{ cat }}</b-form-checkbox>
-        </b-form-checkbox-group>
-      </b-form-group>
-      <b-button @click="closeDropdown">취소</b-button>
-      <b-button @click="fetchDataWithSelectedCategories" variant="success">확인</b-button>
-    </b-dropdown>
-    <b-modal v-model="modalVisible" :title="modalTitle" hide-footer>
-      <!-- Create.vue 컴포넌트 렌더링 -->
-      <Create :isEditMode="isEditMode" :editId="editId" @closeModal="closeModal" />
-    </b-modal>
-    <b-table striped hover :items="items" :fields="fields">
-      <template #cell(actions)="row">
-        <!-- 제어 버튼 -->
-        <div class="btn-group" role="group">
-          <b-button size="sm" @click="toggleDetails(row.item)" class="control-button">
-            {{ row.item.detailsShowing ? '숨김' : '펼침' }}
-          </b-button>
-          <b-button size="sm" variant="warning" @click="editItem(row.item)" class="control-button">수정</b-button>
-          <b-button size="sm" variant="danger" @click="deleteItem(row.item)" class="control-button last-button">삭제</b-button>
-        </div>
-        
-      </template>
+      <!-- 신규 등록 버튼 -->
+      <b-button @click="showModal" class="nr_button">신규 등록</b-button>
+      <!-- 모달 -->
+      <b-modal v-model="modalVisible" :title="modalTitle" hide-footer>
+        <!-- Create.vue 컴포넌트 렌더링 -->
+        <Create :isEditMode="isEditMode" :editId="editId" @closeModal="closeModal" />
+      </b-modal>
+    </div>
 
-      <!-- 커스텀 컬럼 정의 -->
-      <template #cell(contents_detail)="data">
-        <div>
+    <!-- 게시판 테이블 -->
+    <div class="table-container">
+      <b-table bordered striped hover :items="items" :fields="fields">
+        <template #cell(actions)="row">
+          <!-- 제어 버튼 -->
+          <div class="btn-group" role="group">
+            <b-button size="sm" @click="toggleDetails(row.item)" class="control-button">
+              {{ row.item.detailsShowing ? '숨김' : '펼침' }}
+            </b-button>
+            <b-button size="sm" variant="warning" @click="editItem(row.item)" class="control-button">수정</b-button>
+            <b-button size="sm" variant="danger" @click="deleteItem(row.item)" class="control-button last-button">삭제</b-button>
+          </div>
+        </template>
+
+        <!-- 커스텀 컬럼 정의 -->
+        <template #cell(contents_detail)="data">
           <b-card v-if="data.item.detailsShowing">
             <p>{{ data.item.contents_detail }}</p>
           </b-card>
           <span v-else>{{ truncateText(data.item.contents_detail, 50) }}</span>
-        </div>
-      </template>
+        </template>
 
-      <!-- 확장된 세부 정보 -->
-      <template #row-details="row">
-        <b-card v-if="row.item.detailsShowing">
-          <ul>
-            <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
-          </ul>
-        </b-card>
-      </template>
-    </b-table>
-  </div>
-  <div>
+        <!-- 확장된 세부 정보 -->
+        <template #row-details="row">
+          <b-card v-if="row.item.detailsShowing">
+            <ul>
+              <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
+            </ul>
+          </b-card>
+        </template>
+      </b-table>
+    </div>
+
     <!-- 페이지 번호 표시 및 변경 -->
     <div class="d-flex justify-content-end">
       <div>
@@ -84,7 +91,6 @@
         <span>{{ pageNumber }} / {{ totalPage }}</span>
         <b-button @click="changePage(pageNumber + 1)" :disabled="pageNumber >= totalPage">다음 페이지</b-button>
       </div>
-    </div>
     </div>
   </div>
 </template>
@@ -196,14 +202,15 @@ export default {
       console.error('데이터를 불러오는 중 오류 발생:', error);
     });
 },
+
 fetchDataWithSelectedCategories() {
+  this.pageNumber = 1;
   // 선택된 카테고리를 백엔드에서 요구하는 형식에 맞게 가공합니다.
   const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
   console.log(categoriesParams); // 확인하고 싶은 변수를 콘솔에 출력
   // fetchData1을 호출하여 데이터를 가져옵니다.
   this.fetchData1(this.pageNumber, this.searchKeyword, this.selectedConsonants, categoriesParams);
 },
-
 
   toggleConsonants(consonants) {
   const index = this.selectedConsonants.indexOf(consonants);
@@ -383,8 +390,10 @@ fetchDataWithSelectedCategories() {
 
 <style scoped>
 .table-container {
-  margin-top: 60px; /* 테이블 컨테이너의 상단 마진 설정 */
+  margin-top: 30x; /* 테이블 컨테이너의 상단 마진 설정 */
   position: relative;  /*부모 요소를 상대적으로 설정 */
+  border-width: 1px;
+  border-style: solid;
 }
 .control-button {
   margin-right: 5px; /* 제어 버튼들 간의 오른쪽 마진 설정 */
@@ -396,7 +405,7 @@ fetchDataWithSelectedCategories() {
 }
 
 .nr_button {
-  position: absolute; /* 절대 위치로 설정 */
+  /* position: absolute; 절대 위치로 설정 */
   top: 0; /* 부모 요소 상단에 위치 */
   right: 0; /* 부모 요소 오른쪽에 위치 */
   margin-top: -40px; /* 테이블과 겹치지 않도록 버튼을 위로 올림 */
@@ -404,11 +413,12 @@ fetchDataWithSelectedCategories() {
 }
 
 .category-dropdown {
-  position: absolute; /* 절대 위치로 설정 */
+  /* position: absolute; 절대 위치로 설정 */
+  width: 80px;
   top: 0; /* 부모 요소 상단에 위치 */
   left: 0; /* 부모 요소 왼쪽에 위치 */
   margin-top: -40px; /* 테이블과 겹치지 않도록 드롭다운 박스를 위로 올림 */
-  margin-left: 10px; /* 왼쪽 여백 설정 */
+  margin-left: 30px; /* 왼쪽 여백 설정 */
 }
 
 .category-checkbox {
@@ -428,10 +438,27 @@ fetchDataWithSelectedCategories() {
 }
 
 h2 {
-  float: left;
   margin-left: 20px; /* 왼쪽으로부터의 여백 설정 */
   margin-right: 5px; /* 원하는 만큼 간격 설정 */
   margin-top: 30px; /* 원하는 만큼 위로 떨어뜨릴 수 있습니다. */
+}
+
+.filter-buttons {
+  display: flex; /* 요소들을 수평으로 정렬하기 위해 */
+  align-items: flex-end; /* 수직 정렬을 위해 */
+  justify-content: space-between; /* 각 요소들을 동일한 간격으로 정렬하기 위해 */
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.inline-button {
+  display: inline;
+  align-items: center;
+  margin-left: 80px; /* 왼쪽 여백 설정 */
+}
+
+.search-button {
+ margin-left: 10px; /* 왼쪽 여백 설정 */
 }
 
 </style>
