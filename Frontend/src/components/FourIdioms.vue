@@ -67,10 +67,12 @@
 
         <!-- 커스텀 컬럼 정의 -->
         <template #cell(contents_detail)="data">
+          <div class="left-aligned">
           <b-card v-if="data.item.detailsShowing">
             <p>{{ data.item.contents_detail }}</p>
           </b-card>
           <span v-else>{{ truncateText(data.item.contents_detail, 50) }}</span>
+        </div>
         </template>
 
         <!-- 확장된 세부 정보 -->
@@ -339,24 +341,6 @@ fetchDataWithSelectedCategories() {
       this.selectedCategories = this.prevSelectedCategories;
     },
 
-    // submitSelectedCategories() {
-    //   // 선택된 카테고리들을 백엔드에서 요구하는 형식에 맞게 가공합니다.
-    //   const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
-
-    //   axios.get(`http://192.168.0.149:8000/fourchar/filter/?${categoriesParams}&p=${this.pageNumber}`)
-    //     .then(response => {
-    //       console.log(response.data);
-    //       this.totalPage = response.data.total_page;
-    //       this.items = response.data.content; // 받아온 데이터를 items에 할당
-    //       // 드롭다운 박스를 닫습니다.
-    //       this.$refs.categoryDropdown.hide();
-    //     })
-    //     .catch(error => {
-    //       console.error('GET 요청 중 오류가 발생했습니다.', error);
-    //       // 오류 발생 시 처리할 내용을 추가할 수 있습니다.
-    //     });
-    // },
-
     toggleDropdown() {
       // 드롭다운 박스를 열거나 닫습니다.
       this.$refs.categoryDropdown.toggle();
@@ -377,6 +361,7 @@ fetchDataWithSelectedCategories() {
     }
   }
 },
+
 
     search() {
   // 검색어가 비어 있는지 확인
@@ -465,6 +450,10 @@ h2 {
 
 .search-button {
  margin-left: 10px; /* 왼쪽 여백 설정 */
+}
+
+.left-aligned {
+  text-align: left;
 }
 
 </style>

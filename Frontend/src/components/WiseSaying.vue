@@ -67,7 +67,7 @@
   
         <!-- 커스텀 컬럼 정의 -->
         <template #cell(contents_kr)="data">
-          <div>
+          <div class="left-aligned">
             <b-card v-if="data.item.detailsShowing">
               <p>{{ data.item.contents_kr }}</p>
             </b-card>
@@ -448,6 +448,10 @@ h2 {
 
 .search-button {
  margin-left: 10px; /* 왼쪽 여백 설정 */
+}
+
+.left-aligned {
+  text-align: left;
 }
 
 </style>
