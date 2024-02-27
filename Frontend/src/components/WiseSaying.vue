@@ -350,18 +350,18 @@ toggleConsonants(consonants) {
     },
   
     changePage(page) {
-      if (page > 0 && page <= this.totalPage) {
-        this.pageNumber = page;
-        if (this.selectedCategories.length > 0 || this.searchKeyword.trim() !== '') {
-          // 카테고리가 선택되어 있거나 검색어가 입력되어 있는 경우에만 필터링된 데이터를 가져옵니다.
-          const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
-          this.fetchData1(page, this.searchKeyword, null, categoriesParams);
-        } else {
-          // 카테고리가 선택되어 있지 않고 검색어가 입력되어 있지 않은 경우 전체 데이터를 가져옵니다.
-          this.fetchData1(page);
-        }
-      }
-    },
+  if (page > 0 && page <= this.totalPage) {
+    this.pageNumber = page;
+    if (this.selectedCategories.length > 0 || this.searchKeyword.trim() !== '' || this.selectedConsonants.length > 0) {
+      // 카테고리가 선택되어 있거나 검색어가 입력되어 있거나 자음 필터가 적용된 경우에만 필터링된 데이터를 가져옵니다.
+      const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+      this.fetchData1(page, this.searchKeyword, this.selectedConsonants, categoriesParams);
+    } else {
+      // 카테고리가 선택되어 있지 않고 검색어와 자음 필터가 적용되지 않은 경우 전체 데이터를 가져옵니다.
+      this.fetchData1(page);
+    }
+  }
+},
 
     search() {
   // 검색어가 비어 있는지 확인
