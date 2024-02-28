@@ -5,7 +5,7 @@
 
 ### 1.1 설치 프로그램
 - python==3.8.9
-- MySQL==8.0.36
+- ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)==8.0.36
 
 ### 1.2 설치 라이브러리
 requirements.txt 파일에 해당 목록이 있음*
