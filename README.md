@@ -1,5 +1,5 @@
 <div align= "center">
-    <img src="https://capsule-render.vercel.app/api?type=waving&color=ff69b4&height=240&text=Hello%20Word!&animation=&fontColor=ffffff& fontSize=90" />
+    <img src="https://capsule-render.vercel.app/api?type=waving&color=ff69b4&height=240&text=Hello%20Word!&animation=&fontColor=ffffff& fontSize=90"/>
     </div>
     <div align= "center"> 
     <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 자기소개 제목 내용을 입력하세요. </h2>  
