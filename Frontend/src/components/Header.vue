@@ -26,7 +26,7 @@
   
   <style>
   .my-navbar {
-    background-color: #f8f3c3; 
+    background-color: #f0ce9b; 
     color: black; 
   }
   .logo-container img {
@@ -35,9 +35,9 @@
   }
   
   .custom-text-color {
-    font-size: 20px;
+    font-size: 20px !important;
     color: black !important;
-    font-weight: bold;
+    font-weight: bold !important;
   }
   
   .active .custom-text-color {
