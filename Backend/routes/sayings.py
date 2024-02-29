@@ -65,7 +65,7 @@ async def create_new_saying(new_saying: Saying, session=Depends(get_session)) ->
     statement = select(Category).where(Category.saying_categories == category_name)
     category = session.exec(statement).first()
 
-    if not category:
+    if not category:  # 카테고리명이 없으면 새로 생성
         category = Category(saying_categories=category_name)
         session.add(category)
         session.commit()
