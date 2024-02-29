@@ -176,7 +176,7 @@ export default {
     queryParams.push(`keyword=${keyword}`);
   }
 
-  if (consonants && consonants.length > 0) {
+  if (consonants && consonants.length > 0  && !consonants.includes('전체')) {
     const consonantString = consonants.join('&consonants=');
     queryParams.push(`consonants=${consonantString}`);
   }

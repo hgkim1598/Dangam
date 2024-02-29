@@ -185,7 +185,7 @@ export default {
     queryParams.push(`keyword=${keyword}`);
   }
 
-  if (consonants && consonants.length > 0) {
+  if (consonants && consonants.length > 0  && !consonants.includes('전체')) {
     const consonantString = consonants.join('&consonants=');
     queryParams.push(`consonants=${consonantString}`);
   }
@@ -229,6 +229,8 @@ toggleConsonants(consonants) {
     if (index === -1) {
       // 전체 버튼이 선택되지 않은 경우, 선택된 알파벳 배열에 전체 버튼을 추가하고 다른 알파벳 버튼을 비활성화
       this.selectedConsonants = ['전체'];
+      // this.pageNumber = 1;
+      // this.fetchData1(this.pageNumber, this.searchKeyword, this.selectedConsonants, categoriesParams);
     } else {
       // 전체 버튼이 이미 선택된 경우, 선택을 취소하고 모든 알파벳 버튼을 활성화
       this.selectedConsonants = [];
