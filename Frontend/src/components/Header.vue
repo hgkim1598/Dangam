@@ -7,6 +7,7 @@
           <b-navbar-nav pills>
             <b-nav-item to="/four" :class="{'active': $route.path === '/four'}" @click="handleItemClick('/four')" link-classes="custom-text-color">사자성어</b-nav-item>
             <b-nav-item to="/wise" :class="{'active': $route.path === '/wise'}" @click="handleItemClick('/wise')" link-classes="custom-text-color">명언</b-nav-item>
+            <b-nav-item to="/wise" :class="{'active': $route.path === '/imggen'}" @click="handleItemClick('/imggen')" link-classes="custom-text-color">이미지생성</b-nav-item>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
@@ -32,12 +33,15 @@
   .logo-container img {
     max-width: 100px;
     max-height: 100px;
+    margin-left: 40px;
   }
   
   .custom-text-color {
     font-size: 20px !important;
     color: black !important;
     font-weight: bold !important;
+    margin-right: 20px;
+    margin-left: 20px;
   }
   
   .active .custom-text-color {

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import FourIdioms from '@/components/FourIdioms'
 import WiseSaying from '@/components/WiseSaying'
+import ImageGenerate from '@/components/ImageGenerate'
 
 Vue.use(Router)
 
@@ -22,6 +23,11 @@ export default new Router({
       path: '/wise',
       name: 'WiseSaying',
       component: WiseSaying
+    },
+    {
+      path: '/imggen',
+      name: 'ImageGenerate',
+      component: ImageGenerate
     },
   ]
 })
