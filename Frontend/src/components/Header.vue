@@ -7,6 +7,7 @@
           <b-navbar-nav pills>
             <b-nav-item to="/four" :class="{'active': $route.path === '/four'}" @click="handleItemClick('/four')" link-classes="custom-text-color">사자성어</b-nav-item>
             <b-nav-item to="/wise" :class="{'active': $route.path === '/wise'}" @click="handleItemClick('/wise')" link-classes="custom-text-color">명언</b-nav-item>
+            <b-nav-item to="/ImageCrowling" :class="{'active': $route.path === '/ImageCrowling'}" @click="handleItemClick('/ImageCrowling')" link-classes="custom-text-color">이미지 크롤링</b-nav-item>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
