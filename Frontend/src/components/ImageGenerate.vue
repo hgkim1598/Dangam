@@ -26,21 +26,21 @@
             <b-form-group>
             <b-form-file id="file" v-model="text_file" :state="Boolean(file)" accept=".txt" plain></b-form-file>
           </b-form-group>
-
-          <!--개수 선택-->
-          <b-form-group>
-            <b-form-input id="quantity" v-model="quantity" maxlength="4" placeholder="개수"></b-form-input>
-          </b-form-group>
             <b-button type="submit" variant="primary" class="ml-3">생성</b-button>
           </b-form>
         <b-form-checkbox v-model="selectAll" @change="selectAllImages" class="allchek">전체 선택</b-form-checkbox>
-        <b-button @click="downloadSelectedImages" size="sm" :disabled="selectedImages.length === 0" class="downbtn">선택 다운로드</b-button>
-        <b-button @click="deleteSelectedImages" size="sm" :disabled="selectedImages.length === 0" class="deletebtn">선택 삭제</b-button>
+        <b-button @click="downloadSelectedImages" size="md" :disabled="selectedImages.length === 0" class="downbtn" variant="success">선택 다운로드</b-button>
+        <b-button @click="deleteSelectedImages" size="md" :disabled="selectedImages.length === 0" class="deletebtn" variant="danger">선택 삭제</b-button>
         </div>
 
      </div>
      
     </div>
+    
+        <!-- 토스트 메시지를 표시할 컴포넌트 -->
+        <b-toast v-model="showToast" :auto-hide-delay="5000" variant="success" toaster="b-toaster-bottom-center">
+          이미지 생성이 완료되었습니다.
+        </b-toast>
 
     <!-- 카드들을 표시하는 부분 -->
     <div>
@@ -116,10 +116,11 @@ export default {
       categories: [],
       selectedCategories: [], // 선택된 카테고리 배열
       selectedCategory: null,
-      quantity: 1,
       promptSearch: '', // 검색어를 저장하는 데이터
       categoriesParams: '', // 카테고리를 저장하는 데이터
       images: [], // 이미지 데이터를 저장하는 배열
+      doneMessage: '', // 이미지 생성 이후 완료 메시지를 받는 데이터
+      showToast: false,
     };
   },
   components: {
@@ -140,15 +141,20 @@ export default {
         formData.append('prompt', this.prompt);
         formData.append('text_file', this.text_file);
         formData.append('category', this.selectedCategory);
-        formData.append('quantity', this.quantity);
         console.log(formData);
         // 서버로 POST 요청을 보냅니다.
         await axios.post('http://192.168.0.149:8000/create_image/', formData);
 
         alert('이미지를 생성중입니다. 잠시만 기다려주세요');
+
+        this.doneMessage = response.data.message;
+        console.log(doneMessage);
       } catch (error) {
         console.error('Error uploading file:', error);
       }
+    },
+    showToast() {
+      this.showToast = true;
     },
 
     fetchImages(page, promptSearch, categoriesParams) {
@@ -158,7 +164,7 @@ export default {
       // 조회 버튼이 눌렸을 경우 (필터링)
       if(categoriesParams || promptSearch){
         if(categoriesParams){
-          queryParams.push(`categories=${categoriesParams}`);
+          queryParams.push(`category=${categoriesParams}`);
           // this.$refs.categoryDropdown.hide();
         }
         if(promptSearch){
@@ -218,28 +224,29 @@ export default {
       // 모달을 닫습니다.
       this.hideModal();
     },
-
-  downloadClick(itemId) {
-  // 클릭한 이미지의 created_url을 가져옵니다.
+    downloadClick(itemId) {
   const imageURL = this.items.find(item => item.id === itemId).created_url;
-  // 다운로드할 이미지의 URL을 downloadImage 함수에 전달
   this.downloadImage(imageURL);
 },
-downloadImage(imageURL) {
-  axios.get(imageURL, { responseType: 'blob' })
-    .then(response => {
-      const blob = new Blob([response.data], { type: response.headers['content-type'] });
-      const downloadLink = document.createElement('a');
-      downloadLink.href = URL.createObjectURL(blob);
-      downloadLink.download = 'image';
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-    })
-    .catch(error => {
-      console.error('Error downloading image:', error);
-    });
-},
+async downloadImage(imageURL) {
+      try {
+        // 이미지를 가져오는 GET 요청 진행
+        const response = await axios.get(imageURL, {
+          responseType: 'blob'
+        });
+        
+        // 이미지 다운로드
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'image.png');
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      } catch (error) {
+        console.error('Error downloading image:', error);
+      }
+    },
 
 
 
@@ -268,7 +275,7 @@ downloadImage(imageURL) {
       if (page > 0 && page <= this.totalPage) {
         this.pageNumber = page;
         if (this.selectedCategories.length > 0 ){
-          const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+          const categoriesParams = this.selectedCategories.map(category => `category=${encodeURIComponent(category)}`).join('&');
           this.fetchImages(page,categoriesParams);
         } else {
           this.fetchImages(page);
@@ -357,7 +364,7 @@ downloadImage(imageURL) {
   position: relative; /* 카드 내부의 요소를 position: absolute;로 배치하기 위해 부모 요소를 상대적으로 설정 */
 }
 
-.custom-card .custom-checkbox {
+.card .custom-checkbox {
   position: absolute; /* 카드 내에서 절대 위치로 배치 */
   top: 10px; /* 카드의 상단으로부터 10px 떨어져 있도록 설정 */
   left: 10px; /* 카드의 왼쪽으로부터 10px 떨어져 있도록 설정 */
@@ -414,17 +421,17 @@ downloadImage(imageURL) {
 .downbtn {
   position: absolute;
   top: 10px;
-  right: 100px;
+  right: 130px;
 }
 .allchek{
   position: absolute;
-  top: 10px;
-  right: 250px;
+  top: 15px;
+  right: 280px;
 }
 .deletebtn{
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 30px;
 }
 
 .card {
