@@ -20,7 +20,13 @@
     <b-form-group label="뜻 풀이 *" label-for="contentsDetail">
       <b-form-textarea id="contentsDetail" v-model="contentsDetail" required></b-form-textarea>
     </b-form-group>
-    <b-button type="submit" variant="primary" :disabled="!selectedCategory || !contentsKr || !contentsDetail">{{ isUpdateMode ? '수정' : '등록' }}</b-button>
+    <b-form-group label="긍정 문장 *" label-for="contentsGood">
+      <b-form-textarea id="contentsGood" v-model="contentsGood" required></b-form-textarea>
+    </b-form-group>
+    <b-form-group label="부정 문장 *" label-for="contentsBad">
+      <b-form-textarea id="contentsBad" v-model="contentsBad" required></b-form-textarea>
+    </b-form-group>
+    <b-button type="submit" variant="primary" :disabled="!selectedCategory || !contentsKr || !contentsDetail || !contentsGood || !contentsBad">{{ isUpdateMode ? '수정' : '등록' }}</b-button>
   </b-form>
 </template>
 
@@ -36,7 +42,9 @@ export default {
       contentsDetail: '',
       contentsKr: '',
       contentsZh: '',
-      isUpdateMode: false // 수정 모드 여부
+      isUpdateMode: false, // 수정 모드 여부
+      contentsGood: '',
+      contentsBad: '',
     };
   },
   async created() {
@@ -54,27 +62,29 @@ export default {
   methods: {
     async fetchData(id) {
       try {
-        const response = await axios.get(`https://quotes.api.thegam.io/fourchar/${id}`);
+        const response = await axios.get(`http://192.168.0.149:8000/fourchar/${id}`);
         const data = response.data;
         // 가져온 데이터를 각 input 필드에 설정
         this.selectedCategory = data.category;
         this.contentsKr = data.contents_kr;
         this.contentsZh = data.contents_zh;
         this.contentsDetail = data.contents_detail;
+        this.contentsGood = data.contents_good;
+        this.contentsBad = data.contents_bad;
       } catch (error) {
         console.error('데이터를 불러오는 중 오류 발생:', error);
       }
     },
     async fetchCategories() {
       try {
-        const response = await axios.get('https://quotes.api.thegam.io/category/?select_category=fourchar');
+        const response = await axios.get('http://192.168.0.149:8000/category/?select_category=fourchar');
         this.categories = response.data; // API에서 받아온 카테고리 리스트를 저장합니다.
       } catch (error) {
         console.error('카테고리를 불러오는 중 오류 발생:', error);
       }
     },
     async submitForm() {
-      if (!this.selectedCategory || !this.contentsKr || !this.contentsDetail) {
+      if (!this.selectedCategory || !this.contentsKr || !this.contentsDetail || !this.contentsGood || !this.contentsBad) {
         // 카테고리, 사자성어(한국어), 뜻 풀이 중 하나라도 입력되지 않은 경우
         alert('필수 입력 항목을 모두 작성하세요.');
         return;
@@ -84,15 +94,17 @@ export default {
         contents_kr: this.contentsKr,
         contents_zh: this.contentsZh,
         contents_detail: this.contentsDetail,
-        category: this.selectedCategory
+        category: this.selectedCategory,
+        contnets_good: this.contentsGood,
+        contents_bad: this.contentsBad,
       };
 
       try {
         if (this.isUpdateMode) {
-          await axios.put(`https://quotes.api.thegam.io/fourchar/edit/${this.editId}`, data);
+          await axios.put(`http://192.168.0.149:8000/fourchar/edit/${this.editId}`, data);
           console.log('데이터 수정 성공');
         } else {
-          await axios.post('https://quotes.api.thegam.io/fourchar/new', data);
+          await axios.post('http://192.168.0.149:8000/fourchar/new', data);
           console.log('데이터 등록 성공');
         }
         // 성공적으로 데이터를 수정 또는 등록한 후에 모달 창을 닫고 메인 페이지를 새로고침합니다.

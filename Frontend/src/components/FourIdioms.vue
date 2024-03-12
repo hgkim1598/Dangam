@@ -18,7 +18,11 @@
         <b-button @click="fetchDataWithSelectedCategories" variant="success">확인</b-button>
       </b-dropdown>
       <!-- 긍정/부정 버튼 -->
-      <b-button @click="showOnlyGoodAndBad">긍정/부정만 보기</b-button>
+      <div>
+      <b-button @click="showOnlyGoodAndBad">긍정/부정문 생성된 것만 보기</b-button>
+      <div class="mx-1"></div>
+      <b-button @click="showOnlyGoodAndBad">긍정/부정문 미생성된 것만 보기</b-button>
+      </div>
       <!-- 자음 필터 -->
       <div class="inline-button">
       <b-button
@@ -71,10 +75,8 @@
           <div class="left-aligned">
           <b-card v-if="data.item.detailsShowing">
             <p>{{ data.item.contents_detail }}</p>
-            <p v-if="data.item.contents_good">{{ data.item.contents_good }}</p>
-            <p v-if="data.item.contents_bad">{{ data.item.contents_bad }}</p>
-            <!-- <p v-if="data.item.isNew">{{ data.item.contents_good }}</p>
-            <p v-if="data.item.isNew">{{ data.item.contents_bad }}</p>  -->
+            <p v-if="data.item.contents_good"><strong>긍정:</strong> {{ data.item.contents_good }}</p>
+            <p v-if="data.item.contents_bad"><strong>부정:</strong> {{ data.item.contents_bad }}</p>
           </b-card>
           <span v-else>{{ truncateText(data.item.contents_detail, 50) }}</span>
         </div>
@@ -140,7 +142,6 @@ export default {
       selectedCategories: [], // 선택된 카테고리 배열
       prevSelectedCategories: [], // 이전 선택된 카테고리 배열
       selectedConsonants: [], // 선택된 자음 배열
-      // selectedItemId: null,
       contents_good: null,
       contents_bad: null,
     };
@@ -307,7 +308,7 @@ fetchDataWithSelectedCategories() {
         } catch (error) {
           console.error('아이템 삭제 중 오류 발생:', error);
         }
-        // location.reload();
+        location.reload();
       }
     },
 
