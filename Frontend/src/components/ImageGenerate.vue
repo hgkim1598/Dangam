@@ -134,25 +134,39 @@ export default {
   methods: {
 
     async submitForm() {
-      try {
-        // FormData 객체를 생성합니다.
-        const formData = new FormData();
+  try {
+    // FormData 객체를 생성합니다.
+    const formData = new FormData();
 
-        formData.append('prompt', this.prompt);
-        formData.append('text_file', this.text_file);
-        formData.append('category', this.selectedCategory);
-        console.log(formData);
-        // 서버로 POST 요청을 보냅니다.
-        await axios.post('http://192.168.0.149:8000/create_image/', formData);
+    formData.append('prompt', this.prompt);
+    formData.append('text_file', this.text_file);
+    formData.append('category', this.selectedCategory);
+    console.log(formData);
+    // 서버로 POST 요청을 보냅니다.
+    await axios.post('http://192.168.0.149:8000/create_image/', formData);
 
-        alert('이미지를 생성중입니다. 잠시만 기다려주세요');
+    // 이미지 생성 중에는 b-spinner를 표시합니다.
+    this.showSpinner = true; // showSpinner 변수를 사용하여 b-spinner를 제어합니다.
 
-        this.doneMessage = response.data.message;
-        console.log(doneMessage);
-      } catch (error) {
-        console.error('Error uploading file:', error);
-      }
-    },
+    // 이미지 생성이 완료되면 response가 오고, 그 안에 message가 있을 것입니다.
+    if (response.data && response.data.message) {
+      // 이미지 생성이 완료되었으므로 스피너를 숨깁니다.
+      this.showSpinner = false;
+
+      alert('이미지 생성이 완료되었습니다.');
+      // 여기서 화면을 새로고침하는 코드를 추가하세요.
+      location.reload(); // 현재 페이지를 새로고침합니다.
+    }
+
+    // 입력된 내용 초기화
+    this.prompt = '';
+    this.text_file = null;
+    this.selectedCategory = null;
+  } catch (error) {
+    console.error('Error uploading file:', error);
+  }
+},
+
     showToast() {
       this.showToast = true;
     },
