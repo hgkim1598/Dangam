@@ -30,8 +30,7 @@
         :key="consonants"
         @click="toggleConsonants(consonants)"
         :variant="buttonVariant(consonants)"
-        size="mg"
-      >
+        size="mg">
         {{ consonants }}
       </b-button>
       </div>
@@ -93,6 +92,10 @@
       </b-table>
     </div>
 
+    <div v-if="isLoading" class="spinner-container">
+      <b-spinner v-if="isLoading"></b-spinner>
+    </div>
+
     <!-- 페이지 번호 표시 및 변경 -->
     <div class="d-flex justify-content-end">
       <div>
@@ -144,6 +147,7 @@ export default {
       selectedConsonants: [], // 선택된 자음 배열
       contents_good: null,
       contents_bad: null,
+      isLoading: false,
     };
   },
 
@@ -318,6 +322,7 @@ fetchDataWithSelectedCategories() {
 
       try {
         if (window.confirm('정말 항목을 생성하시겠습니까?')) {
+          this.isLoading = true;
           const response = await axios.get(url);
 
           console.log('Item was created successfully', response.data);
@@ -334,6 +339,7 @@ fetchDataWithSelectedCategories() {
             good: contentsGood,
             bad: contentsBad
           };
+          this.isLoading = false;
           location.reload(true);
         }
       } catch (error) {
@@ -343,6 +349,7 @@ fetchDataWithSelectedCategories() {
           variant: 'danger',
           solid: true
         });
+        this.isLoading = false;
       }
     },
 
@@ -500,6 +507,19 @@ h2 {
 
 .left-aligned {
   text-align: left;
+}
+
+.spinner-container {
+  position: fixed; /* 고정 위치 */
+  top: 0;
+  left: 0;
+  width: 100%; /* 화면 전체 너비 */
+  height: 100%; /* 화면 전체 높이 */
+  background-color: rgba(255, 255, 255, 0.7); /* 반투명 배경 */
+  display: flex; /* Flexbox를 사용하여 중앙 정렬 */
+  justify-content: center; /* 가로 방향 중앙 정렬 */
+  align-items: center; /* 세로 방향 중앙 정렬 */
+  z-index: 9999; /* 다른 요소들 위에 표시 */
 }
 
 </style>

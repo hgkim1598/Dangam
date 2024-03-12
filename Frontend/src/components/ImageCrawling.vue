@@ -65,7 +65,12 @@
           </div>
         </div>
       </div>
-    </b-container>    
+    </b-container>
+
+    <div v-if="isLoading" class="inner-contspainer">
+      <b-spinner v-if="isLoading"></b-spinner>
+    </div>   
+
     <!-- 페이지네이션 -->
     <div class="d-flex justify-content-end">
       <div>
@@ -97,7 +102,8 @@ export default {
       pageNumber: 1, // 현재 페이지 번호
       totalPage: 0, // 전체 페이지 수
       selectedImages: [], // 선택된 이미지를 추적하는 배열
-      selectAll: false // 전체 선택 체크박스
+      selectAll: false, // 전체 선택 체크박스
+      isLoading: false,
     };
   },
 
@@ -173,23 +179,26 @@ export default {
   },
 
   // 이미지 검색 및 카테고리 선택 폼 제출 처리
-  submitForm() {
-    // 사용자가 입력한 키워드와 카테고리를 포함하여 신규 크롤링 요청 보내기
-    const url = `http://192.168.0.149:8000/pixabay/?keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=1`;
+   async submitForm() {
+    try {
+      // 사용자가 입력한 키워드와 카테고리를 포함하여 신규 크롤링 요청 보내기
+      const url = `http://192.168.0.149:8000/pixabay/?keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=1`;
+      
+      // Axios를 사용하여 HTTP GET 요청 보내기
+      const response = await axios.get(url);
+      
+      // 요청이 성공했을 때의 처리
+      console.log('응답 데이터:', response.data);
+      this.isLoading = true;
+      await this.fetchImages(); // 이미지를 다시 불러옴
+      window.location.reload();
+    } catch (error) {
 
-    // Axios를 사용하여 HTTP POST 요청 보내기
-    axios.get(url)
-      .then(response => {
-        // 요청이 성공했을 때의 처리
-        console.log('응답 데이터:', response.data);
-        // 이미지 신규 크롤링 요청에 대한 응답이 성공했을 때 이미지를 다시 불러옴
-        this.fetchImages();
-        window.location.reload();
-      })
-      .catch(error => {
-        // 요청이 실패했을 때의 처리
-        console.error('요청 실패:', error);
-      });
+      // 요청이 실패했을 때의 처리
+      console.error('요청 실패:', error);
+    } finally {
+      this.isLoading = false;
+    }
   },
 
   submitFormCheck() {
@@ -307,4 +316,18 @@ export default {
   height: 200px; /* 높이를 자동으로 조정하여 원본 이미지의 종횡비를 유지 */
   object-fit: cover; /* 이미지가 자리를 차지하도록 설정 */
 }
+
+.spinner-container {
+  position: fixed; /* 고정 위치 */
+  top: 0;
+  left: 0;
+  width: 100%; /* 화면 전체 너비 */
+  height: 100%; /* 화면 전체 높이 */
+  background-color: rgba(255, 255, 255, 0.7); /* 반투명 배경 */
+  display: flex; /* Flexbox를 사용하여 중앙 정렬 */
+  justify-content: center; /* 가로 방향 중앙 정렬 */
+  align-items: center; /* 세로 방향 중앙 정렬 */
+  z-index: 9999; /* 다른 요소들 위에 표시 */
+  }
+
 </style>

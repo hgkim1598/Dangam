@@ -3,14 +3,14 @@
     <!-- 이미지 상세 정보를 표시할 내용 추가 -->
     <div>
       <b-img :src="imageInfo.imageURL" alt="이미지 설명" fluid />
-      <p>이미지 작성자: {{ imageInfo.user }}</p>
-      <p>이미지 타입: {{ imageInfo.type }}</p>
-      <p>이미지 태그: {{ imageInfo.tags }}</p>
-      <p>이미지 키워드: {{ imageInfo.keyword }}</p>
-      <p>이미지 카테고리: {{ imageInfo.category_id }}</p>
-      <p>이미지 높이: {{ imageInfo.imageHeight }}</p>
-      <p>이미지 넓이: {{ imageInfo.imageWidth }}</p>
-      <p>이미지 생성일: {{ imageInfo.created_at }}</p>
+      <p><strong>이미지 작성자:</strong> {{ imageInfo.user }}</p>
+      <p><strong>이미지 타입:</strong> {{ imageInfo.type }}</p>
+      <p><strong>이미지 태그:</strong> {{ imageInfo.tags }}</p>
+      <p><strong>이미지 키워드:</strong> {{ imageInfo.keyword }}</p>
+      <p><strong>이미지 카테고리:</strong> {{ imageInfo.category_id }}</p>
+      <p><strong>이미지 높이:</strong> {{ imageInfo.imageHeight }}</p>
+      <p><strong>이미지 넓이:</strong> {{ imageInfo.imageWidth }}</p>
+      <p><strong>이미지 생성일:</strong> {{ imageInfo.created_at }}</p>
     </div>
   </b-modal>
 </template>
