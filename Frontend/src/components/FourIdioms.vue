@@ -190,7 +190,7 @@ export default {
   fetchData1(page, keyword, consonants, categoriesParams, good_bad) {
   page = Number(page);
 
-  let apiUrl = `http://192.168.0.149:8000/fourchar/filter/`;
+  let apiUrl = `https://quotes.api.thegam.io/fourchar/filter/`;
 
   const queryParams = [];
 
@@ -276,7 +276,7 @@ fetchDataWithSelectedCategories() {
     async fetchData(page) {
       try {
         page = 1;
-        let apiUrl = 'http://192.168.0.149:8000/fourchar';
+        let apiUrl = 'https://quotes.api.thegam.io/fourchar';
         const apiUrl1 = apiUrl += `?p=${page}`;
         const response = await axios.get(apiUrl1);
         this.totalPage = response.data.total_page;
@@ -292,7 +292,7 @@ fetchDataWithSelectedCategories() {
 
     async fetchCategories() {
       try {
-        const apiUrl = 'http://192.168.0.149:8000/category/?select_category=fourchar';
+        const apiUrl = 'https://quotes.api.thegam.io/category/?select_category=fourchar';
         const response = await axios.get(apiUrl);
         this.categories = response.data; // 카테고리 배열에 데이터 저장
       } catch (error) {
@@ -316,7 +316,7 @@ fetchDataWithSelectedCategories() {
       const confirmDelete = confirm('삭제하시겠습니까?');
       if (confirmDelete) {
         try {
-          await axios.delete(`http://192.168.0.149:8000/fourchar/delete/${item.id}`);
+          await axios.delete(`https://quotes.api.thegam.io/fourchar/delete/${item.id}`);
           const index = this.items.findIndex(i => i.id === item.id);
           if (index !== -1) {
             this.items.splice(index, 1);
@@ -331,7 +331,7 @@ fetchDataWithSelectedCategories() {
 
     async createItem(item) {
 
-      const url = `http://192.168.0.149:8000/fourchar/create/?ids=${item.id}`;
+      const url = `https://quotes.api.thegam.io/fourchar/create/?ids=${item.id}`;
 
       try {
         if (window.confirm('정말 항목을 생성하시겠습니까?')) {

@@ -116,7 +116,7 @@ export default {
   methods: {
   async fetchImages() {
     try {
-      const response = await axios.get(`http://192.168.0.149:8000/pixabay/`);
+      const response = await axios.get(`https://quotes.api.thegam.io/pixabay/`);
       this.contents = response.data.contents;
       this.totalPage = response.data.total_page;
       this.pageNumber = 1; // totalPage를 가져왔으므로 페이지 번호를 1로 설정합니다.
@@ -127,7 +127,7 @@ export default {
 
   async deleteImage(imageId) {
     try {
-      await axios.delete(`http://192.168.0.149:8000/pixabay/delete/?ids=${imageId}`);
+      await axios.delete(`https://quotes.api.thegam.io/pixabay/delete/?ids=${imageId}`);
       // 이미지 삭제 후 다시 이미지 데이터를 불러오기
       this.fetchImages();
     } catch (error) {
@@ -171,7 +171,7 @@ export default {
   // 카테고리 데이터 불러오기
   async fetchCategories() {
     try {
-      const response = await axios.get('http://192.168.0.149:8000/pixabay/image_categories/');
+      const response = await axios.get('https://quotes.api.thegam.io/pixabay/image_categories/');
       this.categories = response.data; // 카테고리 배열에 데이터 저장
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -182,7 +182,7 @@ export default {
    async submitForm() {
     try {
       // 사용자가 입력한 키워드와 카테고리를 포함하여 신규 크롤링 요청 보내기
-      const url = `http://192.168.0.149:8000/pixabay/?keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=1`;
+      const url = `https://quotes.api.thegam.io/pixabay/?keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=1`;
       
       // Axios를 사용하여 HTTP GET 요청 보내기
       const response = await axios.get(url);
@@ -203,7 +203,7 @@ export default {
 
   submitFormCheck() {
     // 사용자가 입력한 키워드와 카테고리를 포함하여 신규 크롤링 요청 보내기
-    const url = `http://192.168.0.149:8000/pixabay/?keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=0&p=${this.pageNumber}`;
+    const url = `https://quotes.api.thegam.io/pixabay/?keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=0&p=${this.pageNumber}`;
 
     // Axios를 사용하여 HTTP POST 요청 보내기
     axios.get(url)
@@ -233,7 +233,7 @@ export default {
     }
 
     try {
-      let url = `http://192.168.0.149:8000/pixabay/?p=${page}`;
+      let url = `https://quotes.api.thegam.io/pixabay/?p=${page}`;
       if (this.prompt && this.selectedCategory) {
         url += `&keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=0`; // 키워드와 카테고리 정보 추가
       }
@@ -289,7 +289,7 @@ export default {
         const selectedImageIds = this.selectedImages;
 
         // 삭제할 이미지들의 ID를 서버에 전송하여 삭제
-        const apiUrl = 'http://192.168.0.149:8000/pixabay/delete/';
+        const apiUrl = 'https://quotes.api.thegam.io/pixabay/delete/';
         const queryString = selectedImageIds.map(id => `ids=${id}`).join('&');
         const deleteUrl = `${apiUrl}?${queryString}`;
         await axios.delete(deleteUrl);
