@@ -17,7 +17,12 @@
         <b-button @click="closeDropdown">취소</b-button>
         <b-button @click="fetchDataWithSelectedCategories" variant="success">확인</b-button>
       </b-dropdown>
-
+      <!-- 긍정/부정 버튼 -->
+      <div>
+      <b-button @click="showOnlyGoodAndBad">긍정/부정문 생성된 것만 보기</b-button>
+      <div class="mx-1"></div>
+      <b-button @click="showOnlyGoodAndBad">긍정/부정문 미생성된 것만 보기</b-button>
+      </div>
       <!-- 자음 필터 -->
       <div class="inline-button">
       <b-button
@@ -50,7 +55,6 @@
         <Create :isEditMode="isEditMode" :editId="editId" @closeModal="closeModal" />
       </b-modal>
     </div>
-
     <!-- 게시판 테이블 -->
     <div class="table-container">
       <b-table bordered striped hover :items="items" :fields="fields">
@@ -61,7 +65,8 @@
               {{ row.item.detailsShowing ? '숨김' : '펼침' }}
             </b-button>
             <b-button size="sm" variant="warning" @click="editItem(row.item)" class="control-button">수정</b-button>
-            <b-button size="sm" variant="danger" @click="deleteItem(row.item)" class="control-button last-button">삭제</b-button>
+            <b-button size="sm" variant="danger" @click="deleteItem(row.item)" class="control-button">삭제</b-button>
+            <b-button size="sm" variant="success" @click="createItem(row.item)" class="control-button last-button">생성</b-button>
           </div>
         </template>
 
@@ -70,6 +75,8 @@
           <div class="left-aligned">
           <b-card v-if="data.item.detailsShowing">
             <p>{{ data.item.contents_detail }}</p>
+            <p v-if="data.item.contents_good"><strong>긍정:</strong> {{ data.item.contents_good }}</p>
+            <p v-if="data.item.contents_bad"><strong>부정:</strong> {{ data.item.contents_bad }}</p>
           </b-card>
           <span v-else>{{ truncateText(data.item.contents_detail, 50) }}</span>
         </div>
@@ -134,7 +141,9 @@ export default {
       categories: [], // 카테고리 배열
       selectedCategories: [], // 선택된 카테고리 배열
       prevSelectedCategories: [], // 이전 선택된 카테고리 배열
-      selectedConsonants: [] // 선택된 자음 배열
+      selectedConsonants: [], // 선택된 자음 배열
+      contents_good: null,
+      contents_bad: null,
     };
   },
 
@@ -168,7 +177,7 @@ export default {
   fetchData1(page, keyword, consonants, categoriesParams) {
   page = Number(page);
 
-  let apiUrl = `https://quotes.api.thegam.io/fourchar/filter/`;
+  let apiUrl = `http://192.168.0.149:8000/fourchar/filter/`;
 
   const queryParams = [];
 
@@ -250,7 +259,7 @@ fetchDataWithSelectedCategories() {
     async fetchData(page) {
       try {
         page = 1;
-        let apiUrl = 'https://quotes.api.thegam.io/fourchar';
+        let apiUrl = 'http://192.168.0.149:8000/fourchar';
         const apiUrl1 = apiUrl += `?p=${page}`;
         const response = await axios.get(apiUrl1);
         this.totalPage = response.data.total_page;
@@ -266,7 +275,7 @@ fetchDataWithSelectedCategories() {
 
     async fetchCategories() {
       try {
-        const apiUrl = 'https://quotes.api.thegam.io/category/?select_category=fourchar';
+        const apiUrl = 'http://192.168.0.149:8000/category/?select_category=fourchar';
         const response = await axios.get(apiUrl);
         this.categories = response.data; // 카테고리 배열에 데이터 저장
       } catch (error) {
@@ -283,13 +292,14 @@ fetchDataWithSelectedCategories() {
       this.isEditMode = true;
       this.editId = item.id;
       this.modalVisible = true; // 모달 열기
+
     },
 
     async deleteItem(item) {
       const confirmDelete = confirm('삭제하시겠습니까?');
       if (confirmDelete) {
         try {
-          await axios.delete(`https://quotes.api.thegam.io/fourchar/delete/${item.id}`);
+          await axios.delete(`http://192.168.0.149:8000/fourchar/delete/${item.id}`);
           const index = this.items.findIndex(i => i.id === item.id);
           if (index !== -1) {
             this.items.splice(index, 1);
@@ -299,6 +309,40 @@ fetchDataWithSelectedCategories() {
           console.error('아이템 삭제 중 오류 발생:', error);
         }
         location.reload();
+      }
+    },
+
+    async createItem(item) {
+
+      const url = `http://192.168.0.149:8000/fourchar/create/?ids=${item.id}`;
+
+      try {
+        if (window.confirm('정말 항목을 생성하시겠습니까?')) {
+          const response = await axios.get(url);
+
+          console.log('Item was created successfully', response.data);
+          this.$bvToast.toast('항목이 성공적으로 생성되었습니다.', {
+            title: '성공',
+            variant: 'success',
+            solid: true
+          });
+
+          const contentsGood = response.data.contents_good;
+          const contentsBad = response.data.contents_bad;
+
+          this.contentsDetail = {
+            good: contentsGood,
+            bad: contentsBad
+          };
+          location.reload(true);
+        }
+      } catch (error) {
+        console.error('There was an error creating the item', error);
+        this.$bvToast.toast('항목을 생성하는 중 오류가 발생했습니다.', {
+          title: '오류',
+          variant: 'danger',
+          solid: true
+        });
       }
     },
 
@@ -349,31 +393,33 @@ fetchDataWithSelectedCategories() {
     },
 
     changePage(page) {
-  if (page > 0 && page <= this.totalPage) {
-    this.pageNumber = page;
-    if (this.selectedCategories.length > 0 || this.searchKeyword.trim() !== '' || this.selectedConsonants.length > 0) {
-      // 카테고리가 선택되어 있거나 검색어가 입력되어 있거나 자음 필터가 적용된 경우에만 필터링된 데이터를 가져옵니다.
-      const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
-      this.fetchData1(page, this.searchKeyword, this.selectedConsonants, categoriesParams);
-    } else {
-      // 카테고리가 선택되어 있지 않고 검색어와 자음 필터가 적용되지 않은 경우 전체 데이터를 가져옵니다.
-      this.fetchData1(page);
+    if (page > 0 && page <= this.totalPage) {
+      this.pageNumber = page;
+      if (this.selectedCategories.length > 0 || this.searchKeyword.trim() !== '' || this.selectedConsonants.length > 0) {
+        // 카테고리가 선택되어 있거나 검색어가 입력되어 있거나 자음 필터가 적용된 경우에만 필터링된 데이터를 가져옵니다.
+        const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
+        this.fetchData1(page, this.searchKeyword, this.selectedConsonants, categoriesParams);
+      } else {
+        // 카테고리가 선택되어 있지 않고 검색어와 자음 필터가 적용되지 않은 경우 전체 데이터를 가져옵니다.
+        this.fetchData1(page);
+      }
     }
-  }
-},
+  },
 
-
-    search() {
+  async showOnlyGoodAndBad() {
+  },
+  search() {
   // 검색어가 비어 있는지 확인
   const trimmedKeyword = this.searchKeyword.trim();
   
   // 카테고리 선택과 자음 필터를 모두 적용하여 카테고리 쿼리를 생성
   const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
   
+  this.pageNumber = 1;
+
   // fetchData1 함수를 호출하여 새로운 검색 결과를 가져옵니다.
   this.fetchData1(this.pageNumber, trimmedKeyword, this.selectedConsonants, categoriesParams);
 },
-
 
   }
 };
