@@ -7,9 +7,6 @@
 
       <!-- 다른 상세 정보들 -->
       <div>
-        <!-- 이미지 URL -->
-        <p class="long-text"><strong>Image URL:</strong> {{ imageInfo.created_url }}</p>
-
         <!-- 다른 상세 정보들 -->
         <p><strong>프롬프트:</strong> {{ imageInfo.prompt }}</p>
         <p><strong>카테고리:</strong> {{ getCategoryName(imageInfo.category_id) }}</p>

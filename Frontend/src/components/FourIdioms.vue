@@ -19,9 +19,17 @@
       </b-dropdown>
       <!-- 긍정/부정 버튼 -->
       <div>
-      <b-button @click="showOnlyGoodAndBad">긍정/부정문 생성된 것만 보기</b-button>
-      <div class="mx-1"></div>
-      <b-button @click="showOnlyGoodAndBad">긍정/부정문 미생성된 것만 보기</b-button>
+      <b-dropdown>
+        <template #button-content>
+          긍부정 생성 여부
+        </template>
+        <b-dropdown-menu class="custom-dropdown-menu">
+          <div style="max-height: 300px; overflow-y: auto;">
+            <b-dropdown-item  @click="generated">생성 된 것 모아보기</b-dropdown-item>
+            <b-dropdown-item  @click="generated">생성 안 된 것 모아보기</b-dropdown-item>
+          </div>
+        </b-dropdown-menu>
+      </b-dropdown>
       </div>
       <!-- 자음 필터 -->
       <div class="inline-button">
@@ -144,6 +152,7 @@ export default {
       selectedConsonants: [], // 선택된 자음 배열
       contents_good: null,
       contents_bad: null,
+      good_bad: '',
     };
   },
 
@@ -174,7 +183,7 @@ export default {
     }
   },
 
-  fetchData1(page, keyword, consonants, categoriesParams) {
+  fetchData1(page, keyword, consonants, categoriesParams, good_bad) {
   page = Number(page);
 
   let apiUrl = `http://192.168.0.149:8000/fourchar/filter/`;
@@ -193,6 +202,10 @@ export default {
   if (categoriesParams) {
     queryParams.push(categoriesParams);
     this.$refs.categoryDropdown.hide();
+  }
+
+  if(good_bad){
+    queryParams.push(good_bad);
   }
 
   queryParams.push(`p=${page}`);
@@ -221,7 +234,7 @@ fetchDataWithSelectedCategories() {
   console.log(categoriesParams); // 확인하고 싶은 변수를 콘솔에 출력
   // fetchData1을 호출하여 데이터를 가져옵니다.
   this.pageNumber = 1;
-  this.fetchData1(this.pageNumber, this.searchKeyword, this.selectedConsonants, categoriesParams);
+  this.fetchData1(this.pageNumber, this.searchKeyword, this.selectedConsonants, categoriesParams, this.good_bad);
 },
 
   toggleConsonants(consonants) {
@@ -395,10 +408,10 @@ fetchDataWithSelectedCategories() {
     changePage(page) {
     if (page > 0 && page <= this.totalPage) {
       this.pageNumber = page;
-      if (this.selectedCategories.length > 0 || this.searchKeyword.trim() !== '' || this.selectedConsonants.length > 0) {
+      if (this.selectedCategories.length > 0 || this.searchKeyword.trim() !== '' || this.selectedConsonants.length > 0 || this.good_bad != '') {
         // 카테고리가 선택되어 있거나 검색어가 입력되어 있거나 자음 필터가 적용된 경우에만 필터링된 데이터를 가져옵니다.
         const categoriesParams = this.selectedCategories.map(category => `categories=${encodeURIComponent(category)}`).join('&');
-        this.fetchData1(page, this.searchKeyword, this.selectedConsonants, categoriesParams);
+        this.fetchData1(page, this.searchKeyword, this.selectedConsonants, categoriesParams, this.good_bad);
       } else {
         // 카테고리가 선택되어 있지 않고 검색어와 자음 필터가 적용되지 않은 경우 전체 데이터를 가져옵니다.
         this.fetchData1(page);
@@ -406,8 +419,6 @@ fetchDataWithSelectedCategories() {
     }
   },
 
-  async showOnlyGoodAndBad() {
-  },
   search() {
   // 검색어가 비어 있는지 확인
   const trimmedKeyword = this.searchKeyword.trim();
@@ -418,8 +429,25 @@ fetchDataWithSelectedCategories() {
   this.pageNumber = 1;
 
   // fetchData1 함수를 호출하여 새로운 검색 결과를 가져옵니다.
-  this.fetchData1(this.pageNumber, trimmedKeyword, this.selectedConsonants, categoriesParams);
+  this.fetchData1(this.pageNumber, trimmedKeyword, this.selectedConsonants, categoriesParams, this.good_bad);
 },
+
+generated(event) {
+  // 클릭된 버튼의 텍스트를 가져옵니다.
+  const buttonText = event.target.textContent;
+
+  // 조건에 따라 good_bad 변수 값을 설정합니다.
+  if (buttonText === '생성 된 것 모아보기') {
+    this.good_bad = 'isnull=0';
+  } else if (buttonText === '생성 안 된 것 모아보기') {
+    this.good_bad = 'isnull=1';
+  }
+  this.pageNumber = 1;
+  // fetchData1 함수를 호출하여 데이터를 가져옵니다.
+  this.fetchData1(this.pageNumber, this.searchKeyword, this.selectedConsonants, this.selectedCategories, this.good_bad);
+},
+
+
 
   }
 };
