@@ -62,7 +62,7 @@ export default {
   methods: {
     async fetchData(id) {
       try {
-        const response = await axios.get(`http://192.168.0.149:8000/fourchar/${id}`);
+        const response = await axios.get(`https://quotes.api.thegam.io/fourchar/${id}`);
         const data = response.data;
         // 가져온 데이터를 각 input 필드에 설정
         this.selectedCategory = data.category;
@@ -77,7 +77,7 @@ export default {
     },
     async fetchCategories() {
       try {
-        const response = await axios.get('http://192.168.0.149:8000/category/?select_category=fourchar');
+        const response = await axios.get('https://quotes.api.thegam.io/category/?select_category=fourchar');
         this.categories = response.data; // API에서 받아온 카테고리 리스트를 저장합니다.
       } catch (error) {
         console.error('카테고리를 불러오는 중 오류 발생:', error);
@@ -101,10 +101,10 @@ export default {
 
       try {
         if (this.isUpdateMode) {
-          await axios.put(`http://192.168.0.149:8000/fourchar/edit/${this.editId}`, data);
+          await axios.put(`https://quotes.api.thegam.io/fourchar/edit/${this.editId}`, data);
           console.log('데이터 수정 성공');
         } else {
-          await axios.post('http://192.168.0.149:8000/fourchar/new', data);
+          await axios.post('https://quotes.api.thegam.io/fourchar/new', data);
           console.log('데이터 등록 성공');
         }
         // 성공적으로 데이터를 수정 또는 등록한 후에 모달 창을 닫고 메인 페이지를 새로고침합니다.

@@ -150,7 +150,7 @@ export default {
           formData.append('category', this.selectedCategory);
           console.log(formData);
           // 서버로 POST 요청을 보냅니다.
-          await axios.post('http://192.168.0.149:8000/create_image/', formData);
+          await axios.post('https://quotes.api.thegam.io/create_image/', formData);
 
           // 이미지 생성 중에는 b-spinner를 표시합니다.
           this.showSpinner = true; // showSpinner 변수를 사용하여 b-spinner를 제어합니다.
@@ -185,7 +185,7 @@ export default {
 
     fetchImages(page, promptSearch, categoriesParams) {
       // 이미지 데이터를 가져오는 API 호출
-      let apiUrl = `http://192.168.0.149:8000/create_image/`
+      let apiUrl = `https://quotes.api.thegam.io/create_image/`
       const queryParams = [];
       // 조회 버튼이 눌렸을 경우 (필터링)
       if(categoriesParams || promptSearch){
@@ -222,7 +222,7 @@ export default {
 
   async fetchCategories() {
   try {
-    const apiUrl = 'http://192.168.0.149:8000/pixabay/image_categories/';
+    const apiUrl = 'https://quotes.api.thegam.io/pixabay/image_categories/';
     const response = await axios.get(apiUrl);
     // 카테고리 배열에 데이터 저장
     this.categories = response.data.map(item => item.category);
@@ -279,7 +279,7 @@ async downloadImage(imageURL) {
     async deleteClick(itemId) {
   const confirmDelete = confirm('삭제하시겠습니까?');
   if (confirmDelete) {
-    const apiUrl = `http://192.168.0.149:8000/create_image/delete/?ids=${itemId}`;
+    const apiUrl = `https://quotes.api.thegam.io/create_image/delete/?ids=${itemId}`;
     try {
       await axios.delete(apiUrl);
       const index = this.items.findIndex(item => item.id === itemId); // 수정: 아이템의 id를 비교하여 삭제할 아이템을 찾음
@@ -327,7 +327,7 @@ async downloadImage(imageURL) {
     const confirmDelete = confirm('삭제하시겠습니까?');
     if (confirmDelete) {
       let ids = this.selectedImages.map(image => `ids=${image.id}`).join('&');
-      let apiUrl = `http://192.168.0.149:8000/create_image/delete/?${ids}`;
+      let apiUrl = `https://quotes.api.thegam.io/create_image/delete/?${ids}`;
       try {
         await axios.delete(apiUrl);
         // 삭제된 이미지를 배열에서 제거

@@ -36,7 +36,7 @@ export default {
     async fetchImageInfo() {
       try {
         // 이미지의 상세 정보를 가져오는 API 요청을 보냄
-        const response = await axios.get(`http://192.168.0.149:8000/create_image/${this.itemId}`);
+        const response = await axios.get(`https://quotes.api.thegam.io/create_image/${this.itemId}`);
         this.imageInfo = response.data; // 가져온 상세 정보를 imageInfo에 저장
         console.log(this.imageInfo);
       } catch (error) {
@@ -47,7 +47,7 @@ export default {
 
     async fetchCategories() {
       try {
-        const apiUrl = 'http://192.168.0.149:8000/pixabay/image_categories/';
+        const apiUrl = 'https://quotes.api.thegam.io/pixabay/image_categories/';
         const response = await axios.get(apiUrl);
         // 카테고리 배열에 데이터 저장
         this.categories = response.data;
