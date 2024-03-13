@@ -5,7 +5,7 @@
     <!-- 필터 및 버튼들 정렬 -->
     <div class="filter-buttons">
       <!-- 카테고리 필터 -->
-      <b-dropdown v-if="categories.length > 0" ref="categoryDropdown" class="category-dropdown" variant="">
+      <b-dropdown v-if="categories.length > 0" ref="categoryDropdown" class="category-dropdown" variant="" size="sm">
         <template #button-content>
           카테고리 선택
         </template>
@@ -18,8 +18,8 @@
         <b-button @click="fetchDataWithSelectedCategories" variant="success">확인</b-button>
       </b-dropdown>
       <!-- 긍정/부정 버튼 -->
-      <div>
-      <b-dropdown>
+      <div class="good-bad-btn">
+      <b-dropdown size="sm">
         <template #button-content>
           긍부정 생성 여부
         </template>
@@ -521,6 +521,10 @@ h2 {
   justify-content: space-between; /* 각 요소들을 동일한 간격으로 정렬하기 위해 */
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.good-bad-btn {
+  margin-left: 20px;
 }
 
 .inline-button {
