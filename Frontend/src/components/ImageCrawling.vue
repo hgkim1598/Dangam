@@ -201,7 +201,7 @@ export default {
     }
   },
 
-  submitFormCheck() {
+  async submitFormCheck() {
     let url;
 
     // 사용자가 키워드와 카테고리를 모두 입력한 경우
@@ -246,17 +246,21 @@ export default {
       page = this.totalPage;
     }
 
-    try {
-      let url = `http://192.168.0.149:8000/pixabay/?p=${page}`;
-      if (this.prompt && this.selectedCategory) {
-        url += `&keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=0`; // 키워드와 카테고리 정보 추가
-      }
-      const response = await axios.get(url);
-      this.contents = response.data.contents;
-      this.totalPage = response.data.total_page;
-      this.pageNumber = page;
-    } catch (error) {
-      console.error('Error fetching images:', error);
+  try {
+    let url = `http://192.168.0.149:8000/pixabay/?p=${page}`;
+    if (this.prompt && this.selectedCategory) {
+      url += `&keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=0`;
+    } else if (this.prompt) {
+      url += `&keyword=${this.prompt}&crawling_on=0`;
+    } else if (this.selectedCategory) {
+      url += `&category=${this.selectedCategory}&crawling_on=0`;
+    }
+    const response = await axios.get(url);
+    this.contents = response.data.contents;
+    this.totalPage = response.data.total_page;
+    this.pageNumber = page;
+  } catch (error) {
+    console.error('Error fetching images:', error);
     }
   },
 
