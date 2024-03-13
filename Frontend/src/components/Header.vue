@@ -5,10 +5,10 @@
       <b-navbar-toggle target="nav_collapse"/>
       <b-collapse is-nav id="nav_collapse">
         <b-navbar-nav pills>
-          <b-nav-item to="/four" :class="{'active': $route.path === '/four'}" @click="handleItemClick('/four')" link-classes="custom-text-color">사자성어</b-nav-item>
-          <b-nav-item to="/wise" :class="{'active': $route.path === '/wise'}" @click="handleItemClick('/wise')" link-classes="custom-text-color">명언</b-nav-item>
-          <b-nav-item to="/imggen" :class="{'active': $route.path === '/imggen'}" @click="handleItemClick('/imggen')" link-classes="custom-text-color">이미지생성</b-nav-item>
-          <b-nav-item to="/ImageCrawling" :class="{'active': $route.path === '/ImageCrawling'}" @click="handleItemClick('/ImageCrawling')" link-classes="custom-text-color">이미지 크롤링</b-nav-item>
+          <b-nav-item href="/four" :class="{'active': $route.path === '/four'}" @click="handleItemClick('/four')" link-classes="custom-text-color">사자성어</b-nav-item>
+          <b-nav-item href="/wise" :class="{'active': $route.path === '/wise'}" @click="handleItemClick('/wise')" link-classes="custom-text-color">명언</b-nav-item>
+          <b-nav-item href="/ImageCrawling" :class="{'active': $route.path === '/ImageCrawling'}" @click="handleItemClick('/ImageCrawling')" link-classes="custom-text-color">이미지 크롤링</b-nav-item>
+          <b-nav-item href="/imggen" :class="{'active': $route.path === '/imggen'}" @click="handleItemClick('/imggen')" link-classes="custom-text-color">이미지생성</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
