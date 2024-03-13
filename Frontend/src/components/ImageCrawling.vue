@@ -202,18 +202,32 @@ export default {
   },
 
   submitFormCheck() {
-    // 사용자가 입력한 키워드와 카테고리를 포함하여 신규 크롤링 요청 보내기
-    const url = `http://192.168.0.149:8000/pixabay/?keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=0&p=${this.pageNumber}`;
+    let url;
 
-    // Axios를 사용하여 HTTP POST 요청 보내기
+    // 사용자가 키워드와 카테고리를 모두 입력한 경우
+    if (this.prompt && this.selectedCategory) {
+      url = `http://192.168.0.149:8000/pixabay/?keyword=${this.prompt}&category=${this.selectedCategory}&crawling_on=0&p=${this.pageNumber}`;
+    } else if (this.prompt) {
+      // 사용자가 키워드만 입력한 경우
+      url = `http://192.168.0.149:8000/pixabay/?keyword=${this.prompt}&crawling_on=0&p=${this.pageNumber}`;
+    } else if (this.selectedCategory) {
+      // 사용자가 카테고리만 입력한 경우
+      url = `http://192.168.0.149:8000/pixabay/?category=${this.selectedCategory}&crawling_on=0&p=${this.pageNumber}`;
+    } else {
+      // 필수 입력이 없을 경우 적절한 처리
+      console.error('키워드 또는 카테고리를 선택하세요.');
+      return;
+    }
+
+    // Axios를 사용하여 HTTP GET 요청 보내기
     axios.get(url)
       .then(response => {
         // 요청이 성공했을 때의 처리
         console.log('응답 데이터:', response.data);
         // 이미지 신규 크롤링 요청에 대한 응답이 성공했을 때 이미지를 다시 불러옴
-          this.contents = response.data.contents;
-          this.totalPage = response.data.total_page;
-          this.pageNumber = 1;
+        this.contents = response.data.contents;
+        this.totalPage = response.data.total_page;
+        this.pageNumber = 1;
       })
       .catch(error => {
         // 요청이 실패했을 때의 처리
